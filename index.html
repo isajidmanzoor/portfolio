@@ -572,13 +572,6 @@ if (hasHover && !reducedMotion) {
     });
     el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0,0)'; });
   });
-
-  const bgGlow = document.querySelector('.bg-glow');
-  window.addEventListener('mousemove', e => {
-    const px = (e.clientX / window.innerWidth - 0.5) * 22;
-    const py = (e.clientY / window.innerHeight - 0.5) * 22;
-    bgGlow.style.transform = `translate(${px}px, ${py}px)`;
-  });
 }
 
 /* ================= custom "goal" reticle cursor + trail ================= */
