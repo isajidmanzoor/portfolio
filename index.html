@@ -63,7 +63,7 @@ a{color:inherit;text-decoration:none;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 body.has-cursor,body.has-cursor a,body.has-cursor button{cursor:none;}
 @media (hover:none){ .reticle,.reticle-dot{display:none;} }
-#trailCanvas{position:fixed;inset:0;z-index:499;pointer-events:none;mix-blend-mode:difference;}
+#trailCanvas{position:fixed;inset:0;z-index:499;pointer-events:none;}
 
 /* ---------- scroll progress ---------- */
 .progress{position:fixed;top:0;left:0;height:2px;z-index:600;width:0%;background:linear-gradient(90deg,var(--cyan),var(--emerald));box-shadow:0 0 8px rgba(62,232,201,0.5);}
@@ -581,7 +581,7 @@ if (hasHover) {
   const dot = document.getElementById('reticleDot');
   let mx=0,my=0,rx=0,ry=0;
   window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
-  function loop(){ rx += (mx-rx)*0.16; ry += (my-ry)*0.16; ret.style.left=rx+'px'; ret.style.top=ry+'px'; requestAnimationFrame(loop); }
+  function loop(){ rx += (mx-rx)*0.28; ry += (my-ry)*0.28; ret.style.left=rx+'px'; ret.style.top=ry+'px'; requestAnimationFrame(loop); }
   loop();
   document.querySelectorAll('a,button').forEach(el => {
     el.addEventListener('mouseenter', () => ret.classList.add('big'));
