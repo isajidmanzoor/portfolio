@@ -80,7 +80,16 @@ nav.top .menu a:hover::after{width:100%;}
 .avail-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:availPulse 2s ease-in-out infinite;}
 @keyframes availPulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .nav-toggle{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
-@media (max-width:860px){ nav.top .menu{display:none;} .avail{display:none;} .nav-toggle{display:block;} }
+@media (max-width:860px){
+  nav.top .menu{display:none;}
+  .avail{display:none;}
+  .nav-toggle{display:block;}
+  nav.top .menu.open{
+    display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;
+    background:rgba(7,12,10,0.97);padding:22px 24px;gap:20px;border-bottom:1px solid var(--card-border);
+    backdrop-filter:blur(10px);z-index:150;
+  }
+}
 
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);}
 .reveal.in{opacity:1;transform:translateY(0);}
@@ -231,8 +240,10 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
 @media (max-width:860px){
   .wrap{padding:0 22px;}
   nav.top{padding:20px 22px;}
-  .stats-strip{flex-wrap:wrap;}
-  .stat-cell{min-width:45%;}
+}
+@media (max-width:600px){
+  .gcard{padding-left:28px;}
+  .gc-top::before{left:-20px;}
 }
 </style>
 </head>
@@ -560,6 +571,7 @@ document.querySelectorAll('.stat-cell').forEach(c => barIo.observe(c));
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');
 navToggle.addEventListener('click', () => navMenu.classList.toggle('open'));
+navMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navMenu.classList.remove('open')));
 
 /* ---- magnetic buttons + 3D tilt + parallax orbs ---- */
 if (hasHover && !reducedMotion) {
@@ -633,7 +645,7 @@ function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
 resize(); window.addEventListener('resize', resize);
 
 function initParticles(){
-  const count = Math.min(60, Math.floor((W*H)/24000));
+  const count = W < 700 ? Math.min(24, Math.floor((W*H)/26000)) : Math.min(60, Math.floor((W*H)/24000));
   particles = Array.from({length:count}, () => ({
     x: Math.random()*W, y: Math.random()*H,
     vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
