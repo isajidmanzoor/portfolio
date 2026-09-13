@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application Command Center — Sajid Manzoor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1115;
+  --panel:#171a20;
+  --panel-alt:#1d2129;
+  --border:#262b33;
+  --text:#e8eaed;
+  --text-dim:#9aa1ab;
+  --text-dimmer:#5f6570;
+  --accent:#4fd1c5;
+  --accent-dim:#1f3a37;
+  --amber:#f6c86a;
+  --green:#7ee0a0;
+  --red:#f27d7d;
+  --grey:#9aa1ab;
+  --sans:'Inter', sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;
+  -webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;
+}
+.app{max-width:100vw;}
+.main{max-width:100%;overflow-x:hidden;}
+button, input, textarea, select{font-family:inherit;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+::selection{background:var(--accent-dim);color:var(--accent);}
+
+.app{display:flex;height:100vh;}
+
+/* ---------- sidebar ---------- */
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:20px 14px;
+}
+.brand{font-weight:700;font-size:15px;padding:8px 10px 20px;color:var(--text);}
+.brand .dim{color:var(--text-dimmer);font-weight:500;}
+.nav{display:flex;flex-direction:column;gap:2px;}
+.nav button{
+  display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text-dim);
+  padding:10px 10px;border-radius:8px;font-size:13.5px;text-align:left;cursor:pointer;transition:background .15s,color .15s;
+}
+.nav button:hover{background:var(--panel-alt);color:var(--text);}
+.nav button.active{background:var(--accent-dim);color:var(--accent);font-weight:600;}
+.nav .icon{width:16px;height:16px;flex-shrink:0;}
+.sidebar-foot{margin-top:auto;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text-dimmer);}
+.sidebar-foot .n{color:var(--accent);font-weight:600;}
+
+/* ---------- main ---------- */
+.main{flex:1;overflow-y:auto;padding:36px 44px 60px;}
+.view{display:none;max-width:760px;}
+.view.active{display:block;}
+h1{font-size:22px;font-weight:700;margin-bottom:4px;}
+.sub{color:var(--text-dim);font-size:13.5px;margin-bottom:28px;}
+
+/* ---------- tracker ---------- */
+.quick-search{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.qs-btn{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:9px 14px;font-size:12.5px;text-decoration:none;transition:border-color .15s,color .15s;}
+.qs-btn:hover{border-color:var(--accent);color:var(--accent);}
+.qs-btn svg{width:14px;height:14px;}
+.add-form{
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;
+}
+.form-row{display:grid;grid-template-columns:1.3fr 1.3fr 1fr 1fr;gap:10px;margin-bottom:10px;min-width:0;}
+.form-row > *{min-width:0;}
+.form-row.two{grid-template-columns:1fr 1fr;}
+.form-row input, .form-row select{
+  background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-size:13px;
+}
+.form-row input::placeholder{color:var(--text-dimmer);}
+.add-btn{
+  background:var(--accent);color:#08211d;font-weight:600;border:none;border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;transition:opacity .15s;
+}
+.add-btn:hover{opacity:.88;}
+.add-btn:active{transform:scale(.98);}
+
+.stats-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-pill{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:7px;}
+.stat-pill b{color:var(--text);font-family:var(--mono);}
+
+.table{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.trow{display:grid;grid-template-columns:1.4fr 1.4fr 1fr 0.9fr 0.6fr;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;min-width:0;}
+.trow > *{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.trow:last-child{border-bottom:none;}
+.trow.head{background:var(--panel-alt);color:var(--text-dimmer);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;}
+.trow .company{font-weight:600;}
+.trow .role{color:var(--text-dim);}
+.trow .date{font-family:var(--mono);color:var(--text-dimmer);font-size:12px;}
+.status-select{
+  background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11.5px;cursor:pointer;
+}
+.status-select.saved{color:var(--grey);border-color:var(--grey);}
+.status-select.applied{color:var(--accent);border-color:var(--accent);}
+.status-select.interview{color:var(--amber);border-color:var(--amber);}
+.status-select.offer{color:var(--green);border-color:var(--green);}
+.status-select.rejected{color:var(--red);border-color:var(--red);}
+.row-actions{display:flex;gap:8px;justify-content:flex-end;}
+.icon-btn{background:none;border:none;color:var(--text-dimmer);cursor:pointer;padding:4px;border-radius:5px;transition:color .15s,background .15s;}
+.icon-btn:hover{color:var(--red);background:var(--panel-alt);}
+.empty{padding:44px 20px;text-align:center;color:var(--text-dimmer);font-size:13.5px;}
+
+/* ---------- generator ---------- */
+.gen-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;min-width:0;}
+.gen-layout > *{min-width:0;}
+@media (max-width:820px){ .gen-layout{grid-template-columns:1fr;} }
+.gen-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.field-label{font-size:11.5px;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:block;}
+textarea{
+  width:100%;min-height:180px;background:var(--panel-alt);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:12px;font-size:13.5px;resize:vertical;line-height:1.5;
+}
+.type-row{display:flex;gap:8px;margin:14px 0 16px;flex-wrap:wrap;}
+.type-chip{
+  background:var(--panel-alt);border:1px solid var(--border);color:var(--text-dim);border-radius:20px;
+  padding:7px 14px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s;
+}
+.type-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.gen-btn{
+  width:100%;background:var(--accent);color:#08211d;font-weight:700;border:none;border-radius:8px;padding:12px;font-size:13.5px;cursor:pointer;
+}
+.gen-btn:disabled{opacity:.5;cursor:default;}
+.result-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:280px;display:flex;flex-direction:column;}
+.result-text{white-space:pre-wrap;font-size:13.5px;color:var(--text);line-height:1.65;flex:1;}
+.result-placeholder{color:var(--text-dimmer);font-size:13px;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.copy-btn{margin-top:14px;align-self:flex-start;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:8px 14px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s;}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+.spinner{width:16px;height:16px;border:2px solid rgba(8,33,29,0.3);border-top-color:#08211d;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-box{color:var(--red);font-size:12.5px;margin-top:10px;}
+
+/* ---------- alerts guide ---------- */
+.alert-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.lj-controls{display:flex;gap:10px;margin-bottom:14px;}
+.lj-controls input{flex:1;background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 12px;font-size:13px;}
+.lj-status{color:var(--text-dimmer);font-size:13px;margin-bottom:16px;}
+.lj-src{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:8px;border:1px solid;}
+.lj-src.arbeitnow{color:#6fa8ff;border-color:#6fa8ff;}
+.lj-src.remotive{color:#4fd1c5;border-color:#4fd1c5;}
+.lj-src.remoteok{color:#ff9d4d;border-color:#ff9d4d;}
+.lj-list{display:flex;flex-direction:column;gap:12px;}
+.lj-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.lj-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+.lj-title{font-weight:600;font-size:14.5px;}
+.lj-company{color:var(--text-dim);font-size:13px;margin-bottom:6px;}
+.lj-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.lj-tag{font-family:var(--mono);font-size:10px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:10px;}
+.lj-tag.remote{color:var(--accent);border-color:var(--accent);}
+.lj-actions{display:flex;gap:10px;}
+.lj-btn{font-size:12px;border-radius:6px;padding:7px 12px;text-decoration:none;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;background:none;}
+.lj-btn.primary{background:var(--accent);color:#08211d;border:none;font-weight:600;}
+.lj-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+.alert-card h3{font-size:14.5px;margin-bottom:8px;}
+.alert-card p{color:var(--text-dim);font-size:13px;margin-bottom:10px;}
+.copy-line{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel-alt);
+  border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-family:var(--mono);font-size:12px;color:var(--text-dim);
+}
+.copy-line button{background:none;border:none;color:var(--accent);font-size:11.5px;cursor:pointer;flex-shrink:0;}
+
+@media (max-width:700px){
+  .sidebar{width:64px;padding:16px 8px;}
+  .brand, .nav button span.label, .sidebar-foot{display:none;}
+  .nav button{justify-content:center;}
+  .main{padding:24px 18px 50px;}
+  .form-row{grid-template-columns:1fr 1fr;}
+  .trow{grid-template-columns:1fr;gap:4px;}
+  .trow.head{display:none;}
+  .row-actions{justify-content:flex-start;margin-top:6px;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Job Center<br><span class="dim">Sajid Manzoor</span></div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="tracker">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+        <span class="label">Tracker</span>
+      </button>
+      <button class="nav-btn" data-view="generate">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg>
+        <span class="label">Generate</span>
+      </button>
+      <button class="nav-btn" data-view="alerts">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="label">Alerts</span>
+      </button>
+      <button class="nav-btn" data-view="livejobs">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span class="label">Live Jobs</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot" id="sidebarStats">Loading…</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- TRACKER VIEW -->
+    <section class="view active" id="view-tracker">
+      <h1>Application Tracker</h1>
+      <p class="sub">Every job you apply to, in one place. Nothing here leaves your account.</p>
+
+      <div class="quick-search">
+        <a class="qs-btn" href="https://www.linkedin.com/jobs/search/?keywords=SQA%20Engineer%20OR%20QA%20Automation" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.94 6 2.5 6S0 4.88 0 3.5 1.06 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.83-2.05 3.77-2.05C19.5 8 21 10.2 21 14.14V23h-4v-8.02c0-1.9-.03-4.35-2.65-4.35-2.65 0-3.05 2.07-3.05 4.21V23h-4V8z"/></svg>
+          LinkedIn
+        </a>
+        <a class="qs-btn" href="https://www.indeed.com/jobs?q=QA+Automation+Playwright" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          Indeed
+        </a>
+        <a class="qs-btn" href="https://www.rozee.pk/job/jsearch/q/SQA-Engineer" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          Rozee.pk
+        </a>
+      </div>
+
+      <div class="add-form">
+        <div class="form-row">
+          <input id="f-company" placeholder="Company" />
+          <input id="f-role" placeholder="Role" />
+          <input id="f-date" type="date" />
+          <select id="f-status">
+            <option value="saved">Saved</option>
+            <option value="applied" selected>Applied</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="form-row two">
+          <input id="f-link" placeholder="Job link (optional)" />
+          <input id="f-notes" placeholder="Note (optional)" />
+        </div>
+        <button class="add-btn" id="addBtn">Add application</button>
+      </div>
+
+      <div class="stats-row" id="statsRow"></div>
+      <div class="table" id="tableWrap"></div>
+    </section>
+
+    <!-- GENERATE VIEW -->
+    <section class="view" id="view-generate">
+      <h1>Tailored Message Generator</h1>
+      <p class="sub">Paste a job description. Get a message written around it, in your voice, in seconds.</p>
+
+      <div class="gen-layout">
+        <div class="gen-panel">
+          <div class="form-row two" style="margin-bottom:14px;">
+            <input id="gen-company" placeholder="Company name" />
+            <input id="gen-role" placeholder="Role title" />
+          </div>
+          <span class="field-label">Job description (optional, for your reference)</span>
+          <textarea id="jdInput" placeholder="Paste the job description here…" style="min-height:110px;"></textarea>
+          <div class="type-row">
+            <div class="type-chip active" data-type="Recruiter email">Recruiter email</div>
+            <div class="type-chip" data-type="LinkedIn connection note">LinkedIn note</div>
+            <div class="type-chip" data-type="Cover letter">Cover letter</div>
+          </div>
+          <button class="gen-btn" id="genBtn">Generate message</button>
+          <div class="error-box" id="genError"></div>
+        </div>
+        <div class="result-panel">
+          <span class="field-label">Result</span>
+          <div class="result-placeholder" id="resultPlaceholder">Your tailored message will show up here.</div>
+          <div class="result-text" id="resultText" style="display:none;"></div>
+          <button class="copy-btn" id="copyBtn" style="display:none;">Copy to clipboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALERTS VIEW -->
+    <section class="view" id="view-alerts">
+      <h1>Job Alerts Setup</h1>
+      <p class="sub">Set these up once — new matching jobs land in your inbox automatically, no bot needed.</p>
+
+      <div class="alert-card">
+        <h3>LinkedIn</h3>
+        <p>Jobs tab → search below → toggle "Alert frequency" to Daily.</p>
+        <div class="copy-line"><span id="li-query">SQA Engineer OR QA Automation Engineer — Lahore / Remote</span><button data-copy="li-query">Copy</button></div>
+      </div>
+      <div class="alert-card">
+        <h3>Indeed</h3>
+        <p>Search below → click "Get new jobs for this search by email".</p>
+        <div class="copy-line"><span id="in-query">Manual QA Automation Playwright Postman</span><button data-copy="in-query">Copy</button></div>
+      </div>
+      <div class="alert-card">
+        <h3>Rozee.pk</h3>
+        <p>Set up a Job Alert in your profile settings with these keywords.</p>
+        <div class="copy-line"><span id="rz-query">SQA Engineer, QA Automation, Software Tester</span><button data-copy="rz-query">Copy</button></div>
+      </div>
+    </section>
+
+    <!-- LIVE JOBS VIEW -->
+    <section class="view" id="view-livejobs">
+      <h1>Live Jobs — Worldwide</h1>
+      <p class="sub">Live QA &amp; testing roles from around the world, pulled in automatically and filtered just for you.</p>
+      <div class="lj-controls">
+        <input id="ljSearch" placeholder="Filter results (e.g. 'remote', 'senior', 'python')..." />
+        <button class="lj-btn" id="ljRefresh">↻ Refresh</button>
+      </div>
+      <div id="liveJobsStatus" class="lj-status">Loading live listings…</div>
+      <div id="liveJobsList" class="lj-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ---------------- navigation ---------------- */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+  });
+});
+
+/* ---------------- tracker ---------------- */
+let applications = [];
+
+function loadApplications(){
+  try{
+    const raw = localStorage.getItem('jobcenter_applications');
+    applications = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    applications = [];
+  }
+  renderTracker();
+}
+
+function saveApplications(){
+  try{
+    localStorage.setItem('jobcenter_applications', JSON.stringify(applications));
+  }catch(e){
+    console.error('Storage error', e);
+  }
+}
+
+function renderTracker(){
+  const wrap = document.getElementById('tableWrap');
+  const statsRow = document.getElementById('statsRow');
+  const sidebarStats = document.getElementById('sidebarStats');
+
+  const counts = { saved:0, applied:0, interview:0, offer:0, rejected:0 };
+  applications.forEach(a => { counts[a.status] = (counts[a.status]||0) + 1; });
+
+  statsRow.innerHTML = `
+    <div class="stat-pill"><b>${applications.length}</b> total</div>
+    <div class="stat-pill"><b>${counts.applied||0}</b> applied</div>
+    <div class="stat-pill"><b>${counts.interview||0}</b> interviewing</div>
+    <div class="stat-pill"><b>${counts.offer||0}</b> offers</div>
+  `;
+  sidebarStats.innerHTML = `<span class="n">${applications.length}</span> tracked`;
+
+  if (applications.length === 0){
+    wrap.innerHTML = `<div class="empty">No applications yet — add your first one above.</div>`;
+    return;
+  }
+
+  const sorted = [...applications].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const rows = sorted.map(app => `
+    <div class="trow" data-id="${app.id}">
+      <div class="company">${escapeHtml(app.company)}</div>
+      <div class="role">${escapeHtml(app.role)}</div>
+      <div class="date">${app.date || '—'}</div>
+      <div>
+        <select class="status-select ${app.status}" data-id="${app.id}">
+          <option value="saved" ${app.status==='saved'?'selected':''}>Saved</option>
+          <option value="applied" ${app.status==='applied'?'selected':''}>Applied</option>
+          <option value="interview" ${app.status==='interview'?'selected':''}>Interview</option>
+          <option value="offer" ${app.status==='offer'?'selected':''}>Offer</option>
+          <option value="rejected" ${app.status==='rejected'?'selected':''}>Rejected</option>
+        </select>
+      </div>
+      <div class="row-actions">
+        <button class="icon-btn" data-del="${app.id}" title="Delete">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  wrap.innerHTML = `
+    <div class="trow head"><div>Company</div><div>Role</div><div>Date</div><div>Status</div><div></div></div>
+    ${rows}
+  `;
+
+  wrap.querySelectorAll('.status-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const app = applications.find(a => a.id === sel.dataset.id);
+      if (app){ app.status = sel.value; saveApplications(); renderTracker(); }
+    });
+  });
+  wrap.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applications = applications.filter(a => a.id !== btn.dataset.del);
+      saveApplications();
+      renderTracker();
+    });
+  });
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  const company = document.getElementById('f-company').value.trim();
+  const role = document.getElementById('f-role').value.trim();
+  const date = document.getElementById('f-date').value;
+  const status = document.getElementById('f-status').value;
+  const link = document.getElementById('f-link').value.trim();
+  const notes = document.getElementById('f-notes').value.trim();
+  if (!company || !role) return;
+
+  applications.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    company, role, date: date || new Date().toISOString().slice(0,10), status, link, notes
+  });
+  saveApplications();
+  renderTracker();
+
+  ['f-company','f-role','f-date','f-link','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-status').value = 'applied';
+});
+
+loadApplications();
+
+/* ---------------- generator ---------------- */
+let selectedType = 'Recruiter email';
+document.querySelectorAll('.type-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedType = chip.dataset.type;
+  });
+});
+
+function buildMessage(type, company, role){
+  const c = company || 'your company';
+  const r = role || 'this role';
+  if (type === 'LinkedIn connection note'){
+    return `Hi, I'm an SQA Engineer (manual testing + Playwright automation) and noticed the ${r} opening at ${c}. Would love to connect and learn more about the team — here's a quick look at my work: sajidthebhatti.vercel.app`;
+  }
+  if (type === 'Cover letter'){
+    return `Dear Hiring Manager,
+
+I'm Sajid Manzoor, an SQA Engineer based in Lahore with 2 years of experience testing web, SaaS, banking, and AI/ML applications — manual first, automation second.
+
+I'm writing about the ${r} position at ${c}. In my current role, I rebuilt how test cases were prioritized and cut a regression cycle by roughly a third; on another project, I shipped a legal-ops mobile app with zero critical bugs at launch. Alongside client QA work, I also build full-stack products end to end — including an AI health assistant and a multi-tenant SaaS platform — so I bring both a tester's eye and a builder's context to every review.
+
+I'd welcome the chance to talk about how I could contribute to ${c}. My portfolio, with detailed case studies, is at sajidthebhatti.vercel.app.
+
+Best regards,
+Sajid Manzoor
+isajidmanzoor@gmail.com | +92 313 6194135`;
+  }
+  return `Subject: Application — ${r} at ${c}
+
+Hi,
+
+I'm Sajid Manzoor, an SQA Engineer based in Lahore with 2 years of hands-on experience in manual testing, test automation (Playwright MCP), and API testing across banking, blockchain, and AI/ML products.
+
+I saw the ${r} opening at ${c} and wanted to reach out directly. At my current role, I cut a regression cycle by roughly a third by rethinking how test cases were prioritized, and I've shipped products with zero critical bugs at launch — the kind of ownership I'd bring to this role.
+
+Portfolio: https://sajidthebhatti.vercel.app
+Happy to share more or jump on a quick call.
+
+Best,
+Sajid Manzoor
+isajidmanzoor@gmail.com | +92 313 6194135`;
+}
+
+document.getElementById('genBtn').addEventListener('click', () => {
+  const company = document.getElementById('gen-company').value.trim();
+  const role = document.getElementById('gen-role').value.trim();
+  const errorBox = document.getElementById('genError');
+  const placeholder = document.getElementById('resultPlaceholder');
+  const resultText = document.getElementById('resultText');
+  const copyBtn = document.getElementById('copyBtn');
+
+  errorBox.textContent = '';
+  if (!company || !role){ errorBox.textContent = 'Add a company and role first.'; return; }
+
+  const text = buildMessage(selectedType, company, role);
+  placeholder.style.display = 'none';
+  resultText.style.display = 'block';
+  resultText.textContent = text;
+  copyBtn.style.display = 'inline-block';
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = document.getElementById('resultText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+});
+
+/* ---------------- live jobs (public API, QA-filtered) ---------------- */
+const QA_KEYWORDS = ['qa','test','tester','testing','quality','sdet','automation','sqa'];
+
+function matchesQA(job){
+  const hay = (job.title + ' ' + (job.tags||[]).join(' ')).toLowerCase();
+  return QA_KEYWORDS.some(k => hay.includes(k));
+}
+
+let LIVE_JOBS_CACHE = [];
+
+async function loadLiveJobs(){
+  const statusEl = document.getElementById('liveJobsStatus');
+  const listEl = document.getElementById('liveJobsList');
+  statusEl.textContent = 'Scanning global sources\u2026';
+  listEl.innerHTML = '';
+
+  try{
+    const res = await fetch('/api/jobs');
+    const data = await res.json();
+    LIVE_JOBS_CACHE = data.jobs || [];
+    renderLiveJobs(LIVE_JOBS_CACHE, data.totalScanned || 0);
+  }catch(e){
+    statusEl.textContent = 'Could not reach the live jobs feed right now \u2014 try Refresh in a moment.';
+  }
+}
+
+function renderLiveJobs(matched, totalScanned){
+  const statusEl = document.getElementById('liveJobsStatus');
+  const listEl = document.getElementById('liveJobsList');
+  const q = (document.getElementById('ljSearch').value || '').toLowerCase();
+  const filtered = q ? matched.filter(j => (j.title+j.company+j.location+(j.tags||[]).join(' ')).toLowerCase().includes(q)) : matched;
+
+  if (matched.length === 0){
+    statusEl.textContent = `Scanned ${totalScanned} live listings worldwide \u2014 none matched QA/testing keywords right now. Try Refresh later, or use the Alerts tab as backup.`;
+    listEl.innerHTML = '';
+    return;
+  }
+  statusEl.textContent = `${totalScanned} live listings scanned worldwide \u00b7 ${matched.length} QA/testing match(es)${q ? ` \u00b7 ${filtered.length} shown after filter` : ''}`;
+
+  listEl.innerHTML = filtered.map((job, i) => `
+    <div class="lj-card">
+      <div class="lj-top">
+        <div>
+          <div class="lj-title">${escapeHtml(job.title)}</div>
+          <div class="lj-company">${escapeHtml(job.company)} \u2014 ${escapeHtml(job.location || '')}</div>
+        </div>
+      </div>
+      <div class="lj-meta">
+        ${job.remote ? '<span class="lj-tag remote">Remote</span>' : ''}
+        ${(job.tags||[]).slice(0,4).map(t => `<span class="lj-tag">${escapeHtml(String(t))}</span>`).join('')}
+      </div>
+      <div class="lj-actions">
+        <a class="lj-btn primary" href="${job.url}" target="_blank" rel="noopener">View & Apply</a>
+        <button class="lj-btn" data-add-live="${i}">Add to Tracker</button>
+      </div>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('[data-add-live]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const job = filtered[parseInt(btn.dataset.addLive, 10)];
+      applications.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+        company: job.company, role: job.title,
+        date: new Date().toISOString().slice(0,10), status: 'saved',
+        link: job.url, notes: 'Found via Live Jobs'
+      });
+      saveApplications();
+      btn.textContent = 'Added \u2713';
+      btn.disabled = true;
+    });
+  });
+}
+
+document.querySelector('[data-view="livejobs"]').addEventListener('click', () => {
+  if (LIVE_JOBS_CACHE.length === 0) loadLiveJobs();
+});
+document.getElementById('ljRefresh').addEventListener('click', loadLiveJobs);
+document.getElementById('ljSearch').addEventListener('input', () => renderLiveJobs(LIVE_JOBS_CACHE, LIVE_JOBS_CACHE.length));
+
+/* ---------------- alerts copy buttons ---------------- */
+document.querySelectorAll('[data-copy]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = document.getElementById(btn.dataset.copy).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => btn.textContent = orig, 1400);
+    });
+  });
+});
+</script>
+</body>
+</html>
