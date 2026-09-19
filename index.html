@@ -696,5 +696,6 @@ function drawParticles(){
 if (!reducedMotion) drawParticles();
 else { particles.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(${p.c},0.4)`; ctx.fill(); }); }
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
