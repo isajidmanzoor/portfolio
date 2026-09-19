@@ -310,7 +310,9 @@ textarea{
       <div class="lj-controls">
         <input id="ljSearch" placeholder="Filter results (e.g. 'remote', 'senior', 'python')..." />
         <button class="lj-btn" id="ljRefresh">↻ Refresh</button>
+        <button class="lj-btn" id="ljNotifToggle">🔔 Enable Alerts</button>
       </div>
+      <div id="ljNotifStatus" class="lj-status" style="display:none;"></div>
       <div id="liveJobsStatus" class="lj-status">Loading live listings…</div>
       <div id="liveJobsList" class="lj-list"></div>
     </section>
@@ -591,6 +593,87 @@ document.querySelector('[data-view="livejobs"]').addEventListener('click', () =>
   if (LIVE_JOBS_CACHE.length === 0) loadLiveJobs();
 });
 document.getElementById('ljRefresh').addEventListener('click', loadLiveJobs);
+
+/* ---------------- background job alerts (Notification API) ---------------- */
+const NOTIF_KEY = 'jc_notif_enabled';
+const SEEN_KEY = 'jc_seen_job_urls';
+let notifInterval = null;
+
+function getSeenUrls(){
+  try{ return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); }catch(e){ return new Set(); }
+}
+function saveSeenUrls(set){
+  localStorage.setItem(SEEN_KEY, JSON.stringify([...set].slice(-500)));
+}
+
+async function checkForNewJobs(isFirstRun){
+  try{
+    const res = await fetch('/api/jobs');
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    const seen = getSeenUrls();
+    const fresh = jobs.filter(j => !seen.has(j.url));
+
+    jobs.forEach(j => seen.add(j.url));
+    saveSeenUrls(seen);
+
+    if (!isFirstRun && fresh.length > 0 && Notification.permission === 'granted'){
+      const title = fresh.length === 1
+        ? `New QA job: ${fresh[0].title}`
+        : `${fresh.length} new QA/testing jobs found`;
+      const body = fresh.length === 1
+        ? `${fresh[0].company} — ${fresh[0].location || 'Remote'}`
+        : fresh.slice(0,3).map(j => j.title).join(', ');
+      const n = new Notification(title, { body, icon: '', tag: 'job-center-alert' });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+  }catch(e){ /* silent fail, retry next interval */ }
+}
+
+function startNotifPolling(){
+  checkForNewJobs(true); // seed "seen" list without notifying on first run
+  if (notifInterval) clearInterval(notifInterval);
+  notifInterval = setInterval(() => checkForNewJobs(false), 5 * 60 * 1000); // every 5 min
+}
+
+function stopNotifPolling(){
+  if (notifInterval) clearInterval(notifInterval);
+  notifInterval = null;
+}
+
+const notifBtn = document.getElementById('ljNotifToggle');
+const notifStatus = document.getElementById('ljNotifStatus');
+
+function refreshNotifBtn(){
+  const enabled = localStorage.getItem(NOTIF_KEY) === 'true' && Notification.permission === 'granted';
+  notifBtn.textContent = enabled ? '🔔 Alerts On' : '🔔 Enable Alerts';
+  notifStatus.style.display = enabled ? 'block' : 'none';
+  notifStatus.textContent = enabled ? 'Checking for new QA jobs every 5 minutes, even while this tab is in the background.' : '';
+}
+
+notifBtn.addEventListener('click', async () => {
+  const currentlyEnabled = localStorage.getItem(NOTIF_KEY) === 'true';
+  if (currentlyEnabled){
+    localStorage.setItem(NOTIF_KEY, 'false');
+    stopNotifPolling();
+    refreshNotifBtn();
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted'){
+    localStorage.setItem(NOTIF_KEY, 'true');
+    startNotifPolling();
+  } else {
+    alert('Notifications were blocked. Enable them in your browser\'s site settings to use this feature.');
+  }
+  refreshNotifBtn();
+});
+
+// resume alerts automatically if previously enabled
+if (localStorage.getItem(NOTIF_KEY) === 'true' && 'Notification' in window && Notification.permission === 'granted'){
+  startNotifPolling();
+}
+refreshNotifBtn();
 document.getElementById('ljSearch').addEventListener('input', () => renderLiveJobs(LIVE_JOBS_CACHE, LIVE_JOBS_CACHE.length));
 
 /* ---------------- alerts copy buttons ---------------- */
