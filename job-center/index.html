@@ -139,6 +139,8 @@ textarea{
 
 /* ---------- alerts guide ---------- */
 .alert-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.lj-banner{display:block;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:22px;font-size:13.5px;text-decoration:none;cursor:pointer;transition:background .15s;}
+.lj-banner:hover{background:rgba(79,209,197,0.2);}
 .lj-controls{display:flex;gap:10px;margin-bottom:14px;}
 .lj-controls input{flex:1;background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 12px;font-size:13px;}
 .lj-status{color:var(--text-dimmer);font-size:13px;margin-bottom:16px;}
@@ -285,6 +287,10 @@ textarea{
     <section class="view" id="view-alerts">
       <h1>Job Alerts Setup</h1>
       <p class="sub">Set these up once — new matching jobs land in your inbox automatically, no bot needed.</p>
+
+      <a href="#" class="lj-banner" id="goLiveJobsBanner">
+        <span>🔔 Want instant browser notifications instead? Turn on Live Alerts →</span>
+      </a>
 
       <div class="alert-card">
         <h3>LinkedIn</h3>
@@ -589,6 +595,11 @@ function renderLiveJobs(matched, totalScanned){
   });
 }
 
+document.getElementById('goLiveJobsBanner').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.querySelector('[data-view="livejobs"]').click();
+});
+
 document.querySelector('[data-view="livejobs"]').addEventListener('click', () => {
   if (LIVE_JOBS_CACHE.length === 0) loadLiveJobs();
 });
@@ -662,6 +673,7 @@ notifBtn.addEventListener('click', async () => {
   const perm = await Notification.requestPermission();
   if (perm === 'granted'){
     localStorage.setItem(NOTIF_KEY, 'true');
+    new Notification('Job alerts enabled ✅', { body: "You'll get a notification here whenever a new QA/testing job shows up." });
     startNotifPolling();
   } else {
     alert('Notifications were blocked. Enable them in your browser\'s site settings to use this feature.');
