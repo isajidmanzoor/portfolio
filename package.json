@@ -1,0 +1,8 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "description": "Sajid Manzoor's portfolio and Job Center",
+  "dependencies": {
+    "nodemailer": "10.1.1"
+  }
+}

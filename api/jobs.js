@@ -95,6 +95,24 @@ async function getJson(url) {
   return r.json();
 }
 
+// ---------- contact emails ----------
+// Only addresses printed in the official job post: never guessed (guesses bounce and look like spam).
+const EMAIL_RE = /[a-z0-9][a-z0-9._%+-]*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24}/gi;
+const NOT_CONTACT = /^(?:no-?reply|donotreply|do-not-reply|privacy|gdpr|dpo|abuse|security|legal|unsubscribe|press|media|example|test|user|name|email|you|your\.?name|first\.?last|firstname\.lastname)@|@(?:example|test|domain|email|sentry)\.|\.(?:png|jpe?g|gif|svg|webp)$/i;
+const BOARD = /@(?:[a-z0-9-]+\.)?(?:himalayas\.app|remotive\.com|remoteok\.com|jobicy\.com|arbeitnow\.com)$/i;
+const HIRING = /(?:^|[._-])(?:hr|careers?|jobs?|recruit\w*|talent|hiring|apply|applications?|cv|resumes?|people|join)(?:[._-]|$)/i;
+
+export function findEmails(html) {
+  const text = String(html || '')
+    .replace(/&#0*64;|&commat;/gi, '@')
+    .replace(/\s*[[(]\s*at\s*[\])]\s*/gi, '@')
+    .replace(/\s*[[(]\s*dot\s*[\])]\s*/gi, '.');
+  const found = [...new Set((text.match(EMAIL_RE) || []).map((e) => e.toLowerCase().replace(/\.+$/, '')))]
+    .filter((e) => !NOT_CONTACT.test(e) && !BOARD.test(e));
+  // Hiring inboxes (careers@, hr@, jobs@ …) first.
+  return found.sort((a, b) => HIRING.test(b.split('@')[0]) - HIRING.test(a.split('@')[0])).slice(0, 3);
+}
+
 // ---------- sources ----------
 // Himalayas: remote jobs; country=PK returns only jobs a candidate in Pakistan may apply to.
 async function himalayas() {
@@ -115,6 +133,7 @@ async function himalayas() {
       salary: money(x.minSalary, x.maxSalary, x.currency, x.salaryPeriod),
       text: `${x.excerpt || ''} ${(x.categories || []).join(' ')} ${strip(x.description).slice(0, 2500)}`,
       blurb: `${strip(x.excerpt)} ${strip(x.description).slice(0, 1500)}`,
+      contacts: findEmails(x.description),
     };
   });
 }
@@ -126,7 +145,7 @@ async function remotive() {
     location: x.candidate_required_location || 'Worldwide', remote: true,
     openToPK: OPEN_TO_PK.test(x.candidate_required_location || 'Worldwide'),
     tags: x.tags || [], url: x.url, posted: toMs(x.publication_date),
-    salaryText: x.salary || '', text: strip(x.description).slice(0, 2500),
+    salaryText: x.salary || '', text: strip(x.description).slice(0, 2500), contacts: findEmails(x.description),
   }));
 }
 
@@ -137,7 +156,7 @@ async function remoteok() {
     location: x.location || 'Remote', remote: true,
     openToPK: !x.location || OPEN_TO_PK.test(x.location),
     tags: x.tags || [], url: x.url || `https://remoteok.com/remote-jobs/${x.id}`, posted: toMs(x.date || x.epoch),
-    salary: money(x.salary_min, x.salary_max, 'USD', 'year'), text: strip(x.description).slice(0, 2500),
+    salary: money(x.salary_min, x.salary_max, 'USD', 'year'), text: strip(x.description).slice(0, 2500), contacts: findEmails(x.description),
   }));
 }
 
@@ -150,7 +169,7 @@ async function jobicy() {
     location: x.jobGeo || 'Anywhere', remote: true,
     openToPK: OPEN_TO_PK.test(x.jobGeo || 'Anywhere'),
     tags: [...(x.jobIndustry || []), x.jobLevel].filter(Boolean).map(strip), url: x.url, posted: toMs(x.pubDate),
-    salary: money(x.salaryMin, x.salaryMax, x.salaryCurrency, x.salaryPeriod), text: strip(x.jobExcerpt),
+    salary: money(x.salaryMin, x.salaryMax, x.salaryCurrency, x.salaryPeriod), text: strip(x.jobExcerpt), contacts: findEmails(x.jobDescription),
   }));
 }
 
@@ -159,7 +178,7 @@ async function arbeitnow() {
   return (j.data || []).map((x) => ({
     source: 'Arbeitnow', title: x.title, company: x.company_name,
     location: x.location || (x.remote ? 'Remote' : ''), remote: !!x.remote, openToPK: false,
-    tags: x.tags || [], url: x.url, posted: toMs(x.created_at), text: strip(x.description).slice(0, 2500),
+    tags: x.tags || [], url: x.url, posted: toMs(x.created_at), text: strip(x.description).slice(0, 2500), contacts: findEmails(x.description),
   }));
 }
 

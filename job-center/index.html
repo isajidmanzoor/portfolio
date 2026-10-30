@@ -427,6 +427,7 @@ dialog::backdrop{background:rgba(5,7,10,.7);}
         <label class="toggle"><input type="checkbox" id="fPk" checked> Open to Pakistan</label>
         <label class="toggle"><input type="checkbox" id="fRecent"> Last 7 days</label>
         <label class="toggle"><input type="checkbox" id="fSenior"> Hide senior/lead</label>
+        <label class="toggle" title="Jobs whose official post lists an email address"><input type="checkbox" id="fEmail"> Has email</label>
       </div>
       <div class="lj-status" id="ljStatus" role="status">Loading live listings…</div>
       <div class="sources" id="ljSources"></div>
@@ -438,6 +439,35 @@ dialog::backdrop{background:rgba(5,7,10,.7);}
     <section class="view" id="view-generate" hidden>
       <h1 tabindex="-1">Tailored Messages</h1>
       <p class="sub">Paste the job description: the message picks up the skills the job asks for that you actually have, and shows the gaps to prepare for.</p>
+      <div class="panel" id="mailSetup" style="margin-bottom:18px;">
+        <h2>Email &amp; CV</h2>
+        <div class="dlg-row" style="justify-content:space-between;">
+          <span id="cvStatus">No CV uploaded yet — add it once and attach it to any email.</span>
+          <span class="dlg-row">
+            <button class="btn small primary" type="button" id="cvUpload">Upload CV</button>
+            <button class="btn small" type="button" id="cvDownload" hidden>Download</button>
+            <button class="btn small" type="button" id="cvRemove" hidden>Remove</button>
+          </span>
+        </div>
+        <input type="file" id="cvFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+        <div class="dlg-row" style="margin-top:12px;justify-content:space-between;">
+          <span id="sendStatus" class="muted">Checking email sending…</span>
+          <span class="dlg-row" id="keyRow" hidden>
+            <input type="password" id="mailKey" placeholder="Job Center key" autocomplete="off" aria-label="Job Center key">
+            <button class="btn small" type="button" id="saveKey">Save key</button>
+          </span>
+        </div>
+        <details style="margin-top:10px;font-size:12.5px;color:var(--text-dim);">
+          <summary style="cursor:pointer;color:var(--accent);">Turn on one-click sending with the CV attached (free)</summary>
+          <ol style="margin:8px 0 0 18px;display:flex;flex-direction:column;gap:4px;">
+            <li>Google Account → Security → turn on <b>2-Step Verification</b>.</li>
+            <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" style="color:var(--accent);">myaccount.google.com/apppasswords</a>, create an app password named “Job Center”.</li>
+            <li>Vercel → portfolio → Settings → Environment Variables: <code>GMAIL_USER</code> = your Gmail address, <code>GMAIL_APP_PASSWORD</code> = the 16-letter app password, <code>JOBCENTER_KEY</code> = a long password you choose.</li>
+            <li>Redeploy, then type the same <code>JOBCENTER_KEY</code> above once on each device.</li>
+          </ol>
+          <p style="margin-top:6px;">Until then, emails open in Gmail ready to send — you attach the CV there.</p>
+        </details>
+      </div>
       <div class="gen-layout">
         <div class="panel">
           <div class="form-row two" style="margin-bottom:12px;">
@@ -464,6 +494,7 @@ dialog::backdrop{background:rgba(5,7,10,.7);}
             <button class="btn" type="button" id="copyBtn" disabled>Copy</button>
             <a class="btn" id="mailBtn" href="#" hidden>Open in email app</a>
             <button class="btn" type="button" id="saveGenBtn" disabled>Save to tracker</button>
+            <button class="btn" type="button" id="emailGenBtn" disabled>✉ Email this</button>
             <span class="counter" id="charCount"></span>
           </div>
         </div>
@@ -529,9 +560,45 @@ dialog::backdrop{background:rgba(5,7,10,.7);}
     </div>
     <div class="dlg-row">
       <button class="btn primary" type="button" id="dPrep">Interview prep</button>
+      <button class="btn" type="button" id="dEmail">✉ Email application</button>
       <button class="btn" type="button" id="dMessage">Write message</button>
     </div>
   </div>
+</dialog>
+
+<dialog id="mailDlg" aria-labelledby="mTitle">
+  <div class="dlg-head">
+    <div><h2 id="mTitle">Email application</h2><p id="mSub"></p></div>
+    <button class="icon-btn" type="button" data-close aria-label="Close">✕</button>
+  </div>
+  <form class="dlg-body" id="mailForm" novalidate>
+    <div>
+      <label class="field-label" for="mTo">To</label>
+      <input id="mTo" type="email" list="mToList" placeholder="hr@company.com" autocomplete="off" style="width:100%;">
+      <datalist id="mToList"></datalist>
+      <div class="muted" id="mToHint" style="font-size:12px;margin-top:4px;"></div>
+    </div>
+    <div class="type-row" role="group" aria-label="Template" style="margin:0;">
+      <button type="button" class="type-chip" data-tpl="email" aria-pressed="true">Application</button>
+      <button type="button" class="type-chip" data-tpl="followup" aria-pressed="false">Follow-up</button>
+    </div>
+    <div>
+      <label class="field-label" for="mSubject">Subject</label>
+      <input id="mSubject" maxlength="200" style="width:100%;">
+    </div>
+    <div>
+      <label class="field-label" for="mBody">Message</label>
+      <textarea id="mBody" rows="12"></textarea>
+    </div>
+    <div class="dlg-row">
+      <label class="toggle"><input type="checkbox" id="mAttach"> Attach CV <span id="mCvName" class="muted"></span></label>
+      <button class="btn small" type="button" id="mUploadCv">Upload CV</button>
+      <label class="toggle" id="mCopyWrap"><input type="checkbox" id="mCopy" checked> Send me a copy</label>
+    </div>
+    <div class="error" id="mError" role="alert"></div>
+    <div class="dlg-row" id="mActions"></div>
+    <p class="muted" id="mNote" style="font-size:12px;"></p>
+  </form>
 </dialog>
 
 <dialog id="prepDlg" aria-labelledby="pTitle">
@@ -636,6 +703,8 @@ function normalizeApp(a) {
     history, interview: DATETIME.test(a.interview) ? a.interview : '',
     skills: Array.isArray(a.skills) ? [...new Set(a.skills.map(String))].slice(0, 24) : [],
     prep: Array.isArray(a.prep) ? a.prep.map(String) : [],
+    email: typeof a.email === 'string' ? a.email.trim().toLowerCase() : '',
+    emails: Array.isArray(a.emails) ? a.emails.filter((m) => m && m.to && YMD.test(m.date)).map((m) => ({ to: String(m.to), date: m.date, via: String(m.via || '') })) : [],
   };
 }
 function loadApplications() {
@@ -1020,10 +1089,10 @@ ${SIGN}`;
 }
 
 let genType = 'email', genApplied = '';
-document.querySelectorAll('.type-chip').forEach((chip) => chip.addEventListener('click', () => setGenType(chip.dataset.type)));
+document.querySelectorAll('.type-chip[data-type]').forEach((chip) => chip.addEventListener('click', () => setGenType(chip.dataset.type)));
 function setGenType(t) {
   genType = t;
-  document.querySelectorAll('.type-chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.type === t)));
+  document.querySelectorAll('.type-chip[data-type]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.type === t)));
 }
 function renderMatch() {
   const jd = $('#jdInput').value;
@@ -1033,7 +1102,8 @@ function renderMatch() {
   box.hidden = false;
   box.innerHTML = `<div><b>${have.length}</b> of <b>${have.length + gap.length}</b> skills in this job are on your profile.</div>
     ${have.length ? `<div class="chips">${have.map((s) => `<span class="chip have">✓ ${esc(s)}</span>`).join('')}</div>` : ''}
-    ${gap.length ? `<div style="margin-top:8px;">Prepare for:</div><div class="chips">${gap.map((s) => `<span class="chip gap">${esc(s)}</span>`).join('')}</div>` : ''}`;
+    ${gap.length ? `<div style="margin-top:8px;">Prepare for:</div><div class="chips">${gap.map((s) => `<span class="chip gap">${esc(s)}</span>`).join('')}</div>` : ''}
+    ${findEmails(jd).length ? `<div style="margin-top:8px;">✉ Email in the post: <b>${findEmails(jd).map(esc).join(', ')}</b> — write the message, then “Email this”.</div>` : ''}`;
 }
 $('#jdInput').addEventListener('input', renderMatch);
 
@@ -1045,6 +1115,7 @@ function updateCounter() {
   const has = n > 0;
   $('#copyBtn').disabled = !has;
   $('#saveGenBtn').disabled = !has || !$('#gen-company').value.trim() || !$('#gen-role').value.trim();
+  $('#emailGenBtn').disabled = $('#saveGenBtn').disabled || genType === 'linkedin';
   const isMail = has && genType !== 'linkedin';
   $('#mailBtn').hidden = !isMail;
   if (isMail) {
@@ -1103,8 +1174,9 @@ const prefs = store.get(PREFS_KEY, {});
 $('#fPk').checked = prefs.pk !== false;
 $('#fRecent').checked = !!prefs.recent;
 $('#fSenior').checked = !!prefs.senior;
+$('#fEmail').checked = !!prefs.email;
 if (prefs.sort === 'new') $('#ljSort').value = 'new';
-function savePrefs() { store.set(PREFS_KEY, { pk: $('#fPk').checked, recent: $('#fRecent').checked, senior: $('#fSenior').checked, sort: $('#ljSort').value }); }
+function savePrefs() { store.set(PREFS_KEY, { pk: $('#fPk').checked, recent: $('#fRecent').checked, senior: $('#fSenior').checked, email: $('#fEmail').checked, sort: $('#ljSort').value }); }
 
 const SENIOR = /\b(?:senior|sr\.?|lead|principal|staff|head|director|manager|architect|vp)\b/i;
 function money(s, text) {
@@ -1123,6 +1195,7 @@ function filteredJobs() {
   if ($('#fPk').checked) list = list.filter((j) => j.openToPK);
   if ($('#fRecent').checked) list = list.filter((j) => j.posted >= week);
   if ($('#fSenior').checked) list = list.filter((j) => !SENIOR.test(j.title));
+  if ($('#fEmail').checked) list = list.filter((j) => j.contacts?.length);
   if (q) list = list.filter((j) => `${j.title} ${j.company} ${j.location} ${(j.skills || []).join(' ')} ${(j.tags || []).join(' ')} ${j.summary}`.toLowerCase().includes(q));
   return $('#ljSort').value === 'new' ? [...list].sort((a, b) => b.posted - a.posted) : list;
 }
@@ -1165,6 +1238,7 @@ function renderLive() {
       <div class="lj-actions">
         <a class="btn primary small" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener">View &amp; apply ↗</a>
         <button class="btn small" type="button" data-act="save" ${inTracker ? 'disabled' : ''}>${inTracker ? 'In tracker ✓' : 'Save to tracker'}</button>
+        ${j.contacts?.length ? `<button class="btn small" type="button" data-act="email" title="Email address published in the job post">✉ Email ${esc(j.contacts[0])}</button>` : ''}
         <button class="btn small" type="button" data-act="write">Write message</button>
         <button class="btn small" type="button" data-act="hide">${hiddenJobs.has(j.id) ? 'Unhide' : 'Hide'}</button>
       </div>
@@ -1183,6 +1257,7 @@ $('#ljList').addEventListener('click', (e) => {
     renderLive();
   }
   if (btn.dataset.act === 'write') openGenerator({ company: job.company, role: job.title, jd: `${job.summary || ''}\nSkills: ${(job.skills || []).join(', ')}` });
+  if (btn.dataset.act === 'email') openCompose({ company: job.company, role: job.title, contacts: job.contacts, skills: job.skills || [], link: safeUrl(job.url), source: `Live Jobs (${job.source})` });
   if (btn.dataset.act === 'hide') {
     const was = hiddenJobs.has(job.id);
     if (was) hiddenJobs.delete(job.id); else hiddenJobs.add(job.id);
@@ -1193,7 +1268,7 @@ $('#ljList').addEventListener('click', (e) => {
 });
 $('#ljShowHidden').addEventListener('click', () => { live.showHidden = !live.showHidden; renderLive(); });
 $('#ljSearch').addEventListener('input', renderLive);
-['#fPk', '#fRecent', '#fSenior', '#ljSort'].forEach((s) => $(s).addEventListener('change', () => { savePrefs(); renderLive(); }));
+['#fPk', '#fRecent', '#fSenior', '#fEmail', '#ljSort'].forEach((s) => $(s).addEventListener('change', () => { savePrefs(); renderLive(); }));
 $('#ljRefresh').addEventListener('click', () => loadLive(true));
 
 async function fetchJobs(fresh) {
@@ -1293,6 +1368,299 @@ $('#notifToggle').addEventListener('click', async () => {
   refreshNotifUi();
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && currentView() === 'live') markLiveSeen(); });
+
+/* ---------------- email applications ---------------- */
+// Emails come only from the official job post (or what the owner types); nothing is guessed.
+const EMAIL_RE = /[a-z0-9][a-z0-9._%+-]*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24}/gi;
+const EMAIL_OK = /^[a-z0-9][a-z0-9._%+-]*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24}$/i;
+const NOT_CONTACT = /^(?:no-?reply|donotreply|do-not-reply|privacy|gdpr|dpo|abuse|security|legal|unsubscribe|press|media|example|test|user|name|email|you|your\.?name|first\.?last|firstname\.lastname)@|@(?:example|test|domain|email|sentry)\.|\.(?:png|jpe?g|gif|svg|webp)$/i;
+const HIRING_INBOX = /(?:^|[._-])(?:hr|careers?|jobs?|recruit\w*|talent|hiring|apply|applications?|cv|resumes?|people|join)(?:[._-]|$)/i;
+function findEmails(text) {
+  const t = String(text || '').replace(/\s*[[(]\s*at\s*[\])]\s*/gi, '@').replace(/\s*[[(]\s*dot\s*[\])]\s*/gi, '.');
+  return [...new Set((t.match(EMAIL_RE) || []).map((e) => e.toLowerCase().replace(/\.+$/, '')))]
+    .filter((e) => !NOT_CONTACT.test(e))
+    .sort((a, b) => HIRING_INBOX.test(b.split('@')[0]) - HIRING_INBOX.test(a.split('@')[0])).slice(0, 5);
+}
+
+/* CV: kept in this browser (IndexedDB) and sent only with an email. */
+const CV_MAX = 3 * 1024 * 1024;
+const CV_TYPES = { pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
+function cvDb(mode, fn) {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) { reject(new Error('This browser cannot store files.')); return; }
+    const open = indexedDB.open('jc-files', 1);
+    open.onupgradeneeded = () => open.result.createObjectStore('files');
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      try {
+        const tx = open.result.transaction('files', mode);
+        const req = fn(tx.objectStore('files'));
+        tx.oncomplete = () => { open.result.close(); resolve(req?.result); };
+        tx.onerror = tx.onabort = () => { open.result.close(); reject(tx.error); };
+      } catch (err) { open.result.close(); reject(err); }
+    };
+  });
+}
+let cv = null; // { name, type, size, saved, blob }
+const kb = (n) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+async function loadCv() { cv = (await cvDb('readonly', (s) => s.get('cv')).catch(() => null)) || null; renderCvUi(); }
+function renderCvUi() {
+  $('#cvStatus').innerHTML = cv ? `CV: <b>${esc(cv.name)}</b> <span class="muted">(${kb(cv.size)}, saved ${esc(cv.saved)})</span>` : 'No CV uploaded yet — add it once and attach it to any email.';
+  $('#cvUpload').textContent = cv ? 'Replace' : 'Upload CV';
+  $('#cvDownload').hidden = !cv;
+  $('#cvRemove').hidden = !cv;
+  $('#mCvName').textContent = cv ? `(${cv.name})` : '(no CV yet)';
+  $('#mAttach').disabled = !cv;
+  if (!cv) $('#mAttach').checked = false;
+  $('#mUploadCv').textContent = cv ? 'Change CV' : 'Upload CV';
+}
+async function saveCv(file) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (!CV_TYPES[ext]) throw new Error('Choose a PDF, DOC or DOCX file.');
+  if (file.size > CV_MAX) throw new Error(`The CV is ${kb(file.size)}; please keep it under 3 MB (export the PDF with smaller images).`);
+  if (ext === 'pdf' && new TextDecoder().decode(await file.slice(0, 4).arrayBuffer()) !== '%PDF') throw new Error('That file is not a valid PDF.');
+  const record = { name: file.name.slice(0, 100), type: CV_TYPES[ext], size: file.size, saved: today(), blob: file };
+  await cvDb('readwrite', (s) => s.put(record, 'cv'));
+  cv = record;
+  renderCvUi();
+}
+const pickCv = () => $('#cvFile').click();
+$('#cvUpload').addEventListener('click', pickCv);
+$('#mUploadCv').addEventListener('click', pickCv);
+$('#cvFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    await saveCv(file);
+    toast(`CV saved: ${file.name}`);
+    if ($('#mailDlg').open && !$('#mAttach').checked) { $('#mAttach').checked = true; toggleCvLine(true); }
+    if ($('#mailDlg').open) renderMailActions();
+  } catch (err) { toast(err.message); }
+});
+$('#cvRemove').addEventListener('click', async () => {
+  if (!confirm('Remove the saved CV from this browser?')) return;
+  await cvDb('readwrite', (s) => s.delete('cv')).catch(() => {});
+  cv = null;
+  renderCvUi();
+});
+$('#cvDownload').addEventListener('click', () => {
+  if (!cv) return;
+  const url = URL.createObjectURL(cv.blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: cv.name });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+const blobToBase64 = (blob) => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload = () => resolve(String(r.result).split(',')[1] || '');
+  r.onerror = () => reject(r.error);
+  r.readAsDataURL(blob);
+});
+
+/* Sending: one click through /api/send when set up, otherwise Gmail compose. */
+const KEY_KEY = 'jc_mail_key';
+let mailCfg = { configured: false, from: null, checked: false };
+async function checkMail() {
+  try {
+    const r = await fetch('/api/send', { headers: { Accept: 'application/json' } });
+    const d = await r.json();
+    mailCfg = { configured: !!d.configured, from: d.from || null, checked: true };
+  } catch { mailCfg = { configured: false, from: null, checked: true }; }
+  renderSendUi();
+}
+const mailKey = () => store.get(KEY_KEY, '');
+function renderSendUi() {
+  const s = $('#sendStatus');
+  if (!mailCfg.checked) return;
+  $('#keyRow').hidden = !mailCfg.configured || !!mailKey();
+  if (!mailCfg.configured) s.textContent = 'One-click sending is off — emails open in Gmail ready to send, and you attach the CV there.';
+  else if (!mailKey()) s.innerHTML = `One-click sending is set up (from <b>${esc(mailCfg.from)}</b>). Enter your Job Center key once on this device:`;
+  else s.innerHTML = `✓ One-click sending on — from <b>${esc(mailCfg.from)}</b>, CV attached. <button class="btn small" type="button" id="forgetKey">Forget key</button>`;
+  $('#forgetKey')?.addEventListener('click', () => { store.set(KEY_KEY, ''); renderSendUi(); if ($('#mailDlg').open) renderMailActions(); });
+}
+$('#saveKey').addEventListener('click', () => {
+  const k = $('#mailKey').value.trim();
+  if (k.length < 8) { toast('Use the JOBCENTER_KEY you set in Vercel (at least 8 characters).'); return; }
+  store.set(KEY_KEY, k);
+  $('#mailKey').value = '';
+  renderSendUi();
+  toast('Key saved on this device.');
+});
+
+const CV_LINE = 'I’ve attached my CV for your review.';
+let compose = null; // { company, role, skills, link, appId, jd, source, applied, kind }
+function setTpl(kind) {
+  compose.kind = kind;
+  document.querySelectorAll('[data-tpl]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.tpl === kind)));
+  const app = compose.appId ? applications.find((a) => a.id === compose.appId) : null;
+  const have = analyseJd(`${(compose.skills || []).join(' ')} ${compose.jd || ''}`).have;
+  const full = buildMessage(kind, compose.company, compose.role, have, compose.applied || (app ? appliedOn(app) : '') || '');
+  const m = full.match(/^Subject: (.*)\n+/);
+  $('#mSubject').value = m ? m[1] : `${compose.role} — Sajid Manzoor`;
+  $('#mBody').value = m ? full.slice(m[0].length) : full;
+  if ($('#mAttach').checked) toggleCvLine(true);
+}
+// Adds or removes the "CV attached" sentence so the text always matches the attachment.
+function toggleCvLine(on) {
+  const body = $('#mBody');
+  let t = body.value.split(`\n\n${CV_LINE}`).join('').split(CV_LINE).join('');
+  if (on) {
+    const anchor = t.search(/\n\n(?:Happy to share more|Thank you for your time|If there is anything else|Best regards)/);
+    t = anchor > -1 ? `${t.slice(0, anchor)}\n\n${CV_LINE}${t.slice(anchor)}` : `${t}\n\n${CV_LINE}`;
+  }
+  body.value = t;
+}
+$('#mAttach').addEventListener('change', (e) => toggleCvLine(e.target.checked));
+document.querySelectorAll('[data-tpl]').forEach((c) => c.addEventListener('click', () => setTpl(c.dataset.tpl)));
+
+function openCompose({ company = '', role = '', contacts = [], skills = [], link = '', appId = '', jd = '', source = '', kind = 'email', subject = '', body = '', applied = '' }) {
+  company = String(company).trim(); role = String(role).trim();
+  if (!company || !role) { toast('Add the company and the role first.'); return; }
+  const app = appId ? applications.find((a) => a.id === appId) : applications.find((a) => sameJob(a, { company, role, link }));
+  const found = [...new Set([...(app?.email ? [app.email] : []), ...contacts, ...findEmails(jd)])].filter((e) => EMAIL_OK.test(e));
+  compose = { company, role, skills: skills.length ? skills : app?.skills || [], link: link || app?.link || '', appId: app?.id || '', jd, source, applied, kind };
+  if ($('#detailDlg').open) $('#detailDlg').close();
+  $('#mSub').textContent = `${role} · ${company}`;
+  $('#mToList').innerHTML = found.map((e) => `<option value="${esc(e)}">`).join('');
+  $('#mTo').value = found[0] || '';
+  $('#mToHint').textContent = found.length
+    ? `${found.length > 1 ? `${found.length} addresses found — pick one. ` : ''}From ${app?.email && found[0] === app.email ? 'your tracker' : 'the official job post'}.`
+    : 'No email in the job post — type the address the company published (e.g. in a LinkedIn post or on its careers page).';
+  $('#mAttach').checked = !!cv;
+  $('#mError').textContent = '';
+  if (subject || body) {
+    $('#mSubject').value = subject;
+    $('#mBody').value = body;
+    document.querySelectorAll('[data-tpl]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.tpl === kind)));
+    if (cv) toggleCvLine(true);
+  } else setTpl(kind);
+  renderCvUi();
+  renderMailActions();
+  $('#mailDlg').showModal();
+  ($('#mTo').value ? $('#mBody') : $('#mTo')).focus();
+}
+
+function renderMailActions() {
+  const one = mailCfg.configured && !!mailKey();
+  let canShare = false;
+  try { canShare = !!(cv && navigator.canShare && navigator.canShare({ files: [new File([cv.blob], cv.name, { type: cv.type })] })); } catch { canShare = false; }
+  $('#mCopyWrap').hidden = !one;
+  $('#mActions').innerHTML = one
+    ? '<button class="btn primary" type="submit" id="mSend">Send email</button>'
+    : `<button class="btn primary" type="button" data-mail="gmail">Open in Gmail</button>
+       <button class="btn" type="button" data-mail="app">Email app</button>
+       ${cv ? '<button class="btn" type="button" data-mail="cv">Download CV to attach</button>' : ''}
+       ${canShare ? '<button class="btn" type="button" data-mail="share">Share with CV</button>' : ''}
+       <button class="btn" type="button" data-mail="done" hidden>✓ I sent it — mark as applied</button>`;
+  $('#mNote').textContent = one
+    ? `Sends from ${mailCfg.from}. One personal email per job — repeated or bulk emails get flagged as spam.`
+    : 'Gmail opens with everything filled in; attach your CV there before sending. For one-click sending with the CV attached, see Messages → Email & CV.';
+}
+
+function readCompose() {
+  const to = $('#mTo').value.trim().toLowerCase();
+  const subject = $('#mSubject').value.replace(/[\r\n]+/g, ' ').trim();
+  const text = $('#mBody').value.trim();
+  if (!EMAIL_OK.test(to)) throw new Error('Enter a valid email address in “To”.');
+  if (!subject) throw new Error('Add a subject.');
+  if (!text) throw new Error('The message is empty.');
+  return { to, subject, text };
+}
+
+// After an email the job is in the tracker as Applied, with who was emailed and when.
+function recordEmail(to, via) {
+  let app = compose.appId ? applications.find((a) => a.id === compose.appId) : null;
+  if (!app) {
+    const r = addApplication({ company: compose.company, role: compose.role, status: 'applied', link: compose.link, skills: compose.skills, notes: compose.source ? `From ${compose.source}` : '' });
+    app = r.app || r.dup;
+  }
+  if (!app) return;
+  compose.appId = app.id;
+  app.email = to;
+  app.emails.push({ to, date: today(), via });
+  app.notes = `${app.notes ? `${app.notes}\n` : ''}Emailed ${to} on ${today()} (${via}).`;
+  if (app.status === 'saved') setStatus(app, 'applied'); else { saveApplications(); refreshAll(); }
+  const c = store.get('jc_mail_count', {});
+  store.set('jc_mail_count', { day: today(), n: (c.day === today() ? c.n : 0) + 1 });
+}
+function alreadyEmailed(to) {
+  const app = compose.appId ? applications.find((a) => a.id === compose.appId) : null;
+  const prev = app?.emails.find((m) => m.to === to);
+  return !prev || confirm(`You already emailed ${to} on ${prev.date}. Send again?`);
+}
+
+$('#mailForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('#mSend');
+  if (!btn || btn.disabled) return;
+  $('#mError').textContent = '';
+  let msg;
+  try { msg = readCompose(); } catch (err) { $('#mError').textContent = err.message; return; }
+  if (!alreadyEmailed(msg.to)) return;
+  const c = store.get('jc_mail_count', {});
+  if (c.day === today() && c.n >= 20 && !confirm(`You have sent ${c.n} emails today. Keep them personal — send this one too?`)) return;
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const attachment = $('#mAttach').checked && cv ? { name: cv.name, data: await blobToBase64(cv.blob) } : null;
+    const res = await fetch('/api/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: mailKey(), ...msg, copyToMe: $('#mCopy').checked, attachment }) });
+    const data = await res.json().catch(() => ({ error: `The server answered HTTP ${res.status}.` }));
+    if (!res.ok || !data.ok) {
+      if (res.status === 401) { store.set(KEY_KEY, ''); renderSendUi(); renderMailActions(); }
+      throw new Error(data.error || `Sending failed (HTTP ${res.status}).`);
+    }
+    recordEmail(msg.to, attachment ? 'sent with CV' : 'sent');
+    $('#mailDlg').close();
+    toast(`Email sent to ${msg.to}${attachment ? ' with your CV' : ''} ✓`);
+  } catch (err) {
+    $('#mError').textContent = err.message;
+  } finally {
+    const again = $('#mSend');
+    if (again) { again.disabled = false; again.textContent = 'Send email'; }
+  }
+});
+$('#mActions').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-mail]');
+  if (!b) return;
+  $('#mError').textContent = '';
+  const act = b.dataset.mail;
+  if (act === 'cv') { $('#cvDownload').click(); return; }
+  if (act === 'done') {
+    const to = $('#mTo').value.trim().toLowerCase();
+    if (!EMAIL_OK.test(to)) { $('#mError').textContent = 'Enter the address you sent it to.'; return; }
+    recordEmail(to, 'sent from Gmail');
+    $('#mailDlg').close();
+    toast(`Marked as applied — emailed ${to}.`);
+    return;
+  }
+  let msg;
+  try { msg = readCompose(); } catch (err) { $('#mError').textContent = err.message; return; }
+  if (!alreadyEmailed(msg.to)) return;
+  const enc = encodeURIComponent;
+  if (act === 'gmail') window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${enc(msg.to)}&su=${enc(msg.subject)}&body=${enc(msg.text)}`, '_blank', 'noopener');
+  if (act === 'app') window.location.href = `mailto:${enc(msg.to)}?subject=${enc(msg.subject)}&body=${enc(msg.text)}`;
+  if (act === 'share') {
+    try { await navigator.share({ title: msg.subject, text: `To: ${msg.to}\n\n${msg.text}`, files: [new File([cv.blob], cv.name, { type: cv.type })] }); } catch { return; }
+  }
+  $('#mActions [data-mail="done"]').hidden = false;
+});
+
+// Entry points from the tracker details and the Messages page.
+$('#dEmail').addEventListener('click', () => {
+  const a = detailApp();
+  if (a) openCompose({ company: a.company, role: a.role, appId: a.id, link: a.link, kind: needsFollow(a) || a.emails.length ? 'followup' : 'email' });
+});
+$('#emailGenBtn').addEventListener('click', () => {
+  const text = $('#resultText').value;
+  const m = text.match(/^Subject: (.*)\n+/);
+  const company = $('#gen-company').value.trim(), role = $('#gen-role').value.trim();
+  openCompose({
+    company, role, jd: $('#jdInput').value, kind: genType === 'followup' ? 'followup' : 'email',
+    skills: (({ have, gap }) => [...have, ...gap])(analyseJd($('#jdInput').value)), applied: genApplied,
+    subject: m ? m[1] : `Application — ${role} at ${company}`,
+    body: m ? text.slice(m[0].length) : text,
+  });
+});
 
 /* ---------------- dashboard ---------------- */
 const GOAL_KEY = 'jc_weekly_goal';
@@ -1489,6 +1857,8 @@ document.querySelectorAll('[data-copy]').forEach((btn) => btn.addEventListener('
 /* ---------------- start ---------------- */
 $('#f-date').value = today();
 loadApplications();
+loadCv();
+checkMail();
 renderTracker();
 refreshNotifUi();
 if (notifOn()) startPolling();
