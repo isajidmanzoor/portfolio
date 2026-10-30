@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sajid Manzoor — SQA Engineer</title>
 <meta name="description" content="Sajid Manzoor — SQA Engineer specializing in manual testing, automation, and AI/ML testing across web, SaaS, banking, and IoT applications.">
+<meta name="theme-color" content="#070c0a">
+<link rel="canonical" href="https://sajidthebhatti.vercel.app/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070c0a'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='34' fill='%233ee8c9'%3ESM%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://sajidthebhatti.vercel.app/">
+<meta property="og:title" content="Sajid Manzoor — SQA Engineer">
+<meta property="og:description" content="Manual testing, Playwright automation and AI/ML QA across banking, blockchain, SaaS and IoT — plus full-stack AI builds.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sajid Manzoor — SQA Engineer">
+<meta name="twitter:description" content="Manual testing, Playwright automation and AI/ML QA across banking, blockchain, SaaS and IoT — plus full-stack AI builds.">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Sajid Manzoor","jobTitle":"SQA Engineer","url":"https://sajidthebhatti.vercel.app/","email":"mailto:isajidmanzoor@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Lahore","addressCountry":"PK"},"sameAs":["https://github.com/isajidmanzoor","https://linkedin.com/in/aitester"],"knowsAbout":["Software Quality Assurance","Playwright","API Testing","Test Automation","AI/ML Testing"]}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,7 +46,10 @@ html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%;}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto;}
   *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+  .marquee-track,.reticle svg,.orb,.scroll-cue,.hero h1,.contact h2{animation:none !important;}
 }
+.skip{position:absolute;left:16px;top:-60px;z-index:700;background:var(--cyan);color:#05130f;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 14px;border-radius:8px;transition:top .2s;}
+.skip:focus{top:12px;}
 body{
   background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.62;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;max-width:100vw;
@@ -86,7 +102,7 @@ nav.top .menu a:hover::after{width:100%;}
   .avail{display:none;}
   .nav-toggle{display:block;}
   nav.top .menu.open{
-    display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;
+    display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;
     background:rgba(7,12,10,0.97);padding:22px 24px;gap:20px;border-bottom:1px solid var(--card-border);
     backdrop-filter:blur(10px);z-index:150;
   }
@@ -118,7 +134,7 @@ nav.top .menu a:hover::after{width:100%;}
 @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
 
 /* ---------- stats strip ---------- */
-.stats-strip{padding:60px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--card-border);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;margin:60px 0;}
+.stats-strip{padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--card-border);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;margin:60px 0;}
 .stat-cell{position:relative;padding:30px 24px 26px;background:rgba(10,16,13,0.75);backdrop-filter:blur(14px);text-align:left;overflow:hidden;transition:background .3s,transform .3s;}
 .stat-cell:hover{background:rgba(14,22,18,0.9);transform:translateY(-2px);}
 .stat-cell::before{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--c1),transparent 70%);opacity:.16;filter:blur(4px);transition:opacity .3s,transform .3s;}
@@ -178,7 +194,7 @@ section{position:relative;}
 .gtags{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
 .gtag{font-family:var(--mono);font-size:10.5px;color:var(--text-dim);border:1px solid var(--card-border);padding:3px 10px;border-radius:5px;background:rgba(255,255,255,0.03);transition:border-color .2s,color .2s;}
 .gtag:hover{border-color:var(--c1);color:var(--c1);}
-.glinks{display:flex;gap:16px;margin-top:14px;font-family:var(--mono);font-size:12px;}
+.glinks{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:14px;font-family:var(--mono);font-size:12px;}
 .glinks a{color:var(--c1);border-bottom:1px solid color-mix(in srgb, var(--c1) 45%, transparent);}
 .sub-label{font-family:var(--mono);font-size:11px;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.1em;padding:10px 0 18px;}
 
@@ -253,18 +269,19 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
-<div class="bg-glow"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
-<canvas id="trailCanvas"></canvas>
-<div class="reticle" id="reticle">
+<a class="skip" href="#experience">Skip to content</a>
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
+<div class="bg-glow" aria-hidden="true"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<canvas id="trailCanvas" aria-hidden="true"></canvas>
+<div class="reticle" id="reticle" aria-hidden="true">
   <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="1" opacity="0.9"/><line x1="20" y1="0" x2="20" y2="7" stroke="currentColor" stroke-width="1.5"/><line x1="20" y1="33" x2="20" y2="40" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="20" x2="7" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="33" y1="20" x2="40" y2="20" stroke="currentColor" stroke-width="1.5"/></svg>
 </div>
-<div class="reticle-dot" id="reticleDot"></div>
-<div class="progress" id="progress"></div>
+<div class="reticle-dot" id="reticleDot" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
-<nav class="top">
-  <div class="mark">S. Manzoor</div>
-  <button class="nav-toggle" id="navToggle">≡</button>
+<nav class="top" aria-label="Main">
+  <a class="mark" href="#hero">S. Manzoor</a>
+  <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">≡</button>
   <div class="menu" id="navMenu">
     <a href="#experience">Experience</a>
     <a href="#projects">Projects</a>
@@ -274,7 +291,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
   <div class="avail"><span class="avail-dot"></span> Open to new work</div>
 </nav>
 
-<div class="wrap">
+<main class="wrap">
 
   <section class="hero" id="hero">
     <div class="kicker">SQA Engineer — Lahore, Pakistan</div>
@@ -299,7 +316,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
     <div class="stat-cell">
       <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 4v14"/></svg></div>
-      <div class="n" data-count="11">0</div><div class="l">Projects</div>
+      <div class="n" data-count="12" id="projectCount">0</div><div class="l">Projects</div>
       <div class="bar"><div class="bar-fill" data-bar="92"></div></div>
     </div>
     <div class="stat-cell">
@@ -309,7 +326,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
     <div class="stat-cell">
       <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3.5v5c0 4.5-3 7.5-7 9.5-4-2-7-5-7-9.5v-5z"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div class="n" data-count="0">0</div><div class="l">Critical Bugs</div>
+      <div class="n" data-count="0">0</div><div class="l">Critical Bugs Shipped</div>
       <div class="bar"><div class="bar-fill" data-bar="100"></div></div>
     </div>
   </div>
@@ -352,7 +369,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
   </section>
 
-  <div class="marquee reveal">
+  <div class="marquee reveal" aria-hidden="true">
     <div class="marquee-track">
       <span class="hi">PLAYWRIGHT</span><span>·</span><span>POSTMAN</span><span>·</span><span class="hi">PYTEST</span><span>·</span><span>JMETER</span><span>·</span><span class="hi">JIRA</span><span>·</span><span>TESTRAIL</span><span>·</span><span class="hi">AI/ML QA</span><span>·</span><span>BLOCKCHAIN</span><span>·</span>
       <span class="hi">PLAYWRIGHT</span><span>·</span><span>POSTMAN</span><span>·</span><span class="hi">PYTEST</span><span>·</span><span>JMETER</span><span>·</span><span class="hi">JIRA</span><span>·</span><span>TESTRAIL</span><span>·</span><span class="hi">AI/ML QA</span><span>·</span><span>BLOCKCHAIN</span><span>·</span>
@@ -428,8 +445,21 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
 
     <div class="sub-label reveal">Personal builds</div>
 
+    <div class="gcard reveal anim-pulse" style="--c1:#ffd66b;--c2:#3ee8c9;">
+      <div class="gc-top"><div><span class="gc-id">TC-011</span> <span class="gc-title">Vaxaura Product Drafts — AI Listing Pipeline</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
+      <p>Internal tool for the vaxaura.com WooCommerce store: drop in product photos and it identifies the product, researches the Pakistani market, writes the full SEO listing and saves it to WordPress as a draft — never published without a human.</p>
+      <ul class="glist">
+        <li>Built-in audit mirrors Rank Math's 16 SEO tests with automatic repair rounds; drafts verified at 100/100 in Rank Math itself.</li>
+        <li>Prices traced to evidence: real Daraz listings matched as same or similar (AI compares them with the photo), outliers dropped, cost margin protected.</li>
+        <li>Claims guard rejects what the photos can't prove — "100% original", "hypoallergenic" — unless the owner confirms it.</li>
+        <li>Tested like a product: 26 unit tests on real marketplace data, production E2E on live drafts, and work that survives page reloads.</li>
+      </ul>
+      <div class="gtags"><span class="gtag">Gemini API</span><span class="gtag">WooCommerce REST</span><span class="gtag">Rank Math</span><span class="gtag">Node.js</span><span class="gtag">Vercel</span></div>
+      <div class="glinks"><a href="https://github.com/isajidmanzoor/vaxaura-product-drafts" target="_blank" rel="noopener">GitHub ↗</a><a href="https://vaxaura-product-drafts.vercel.app" target="_blank" rel="noopener">App (sign-in) ↗</a><a href="https://vaxaura.com" target="_blank" rel="noopener">vaxaura.com ↗</a></div>
+    </div>
+
     <div class="gcard reveal anim-spin" style="--c1:#7ef0b0;--c2:#3ee8c9;">
-      <div class="gc-top"><div><span class="gc-id">TC-011</span> <span class="gc-title">SLP Inventory — Multi-Tenant SaaS Platform</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
+      <div class="gc-top"><div><span class="gc-id">TC-012</span> <span class="gc-title">SLP Inventory — Multi-Tenant SaaS Platform</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
       <p>Production multi-tenant SaaS inventory &amp; invoicing platform for Smart Living Pakistan — built end to end.</p>
       <ul class="glist">
         <li>Role-based access, dynamic pricing, PDF export, and payment tracking.</li>
@@ -441,7 +471,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
 
     <div class="gcard reveal anim-pulse" style="--c1:#ff8fc7;--c2:#7ef0b0;">
-      <div class="gc-top"><div><span class="gc-id">TC-012</span> <span class="gc-title">HealthAI Ultra — AI Health Companion</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
+      <div class="gc-top"><div><span class="gc-id">TC-013</span> <span class="gc-title">HealthAI Ultra — AI Health Companion</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
       <p>Full-stack AI health assistant integrating Google Gemini for symptom analysis, medicine checks, lab report interpretation.</p>
       <ul class="glist">
         <li>Interactive SVG body-map, live ECG-style vitals monitor, Recharts health-score gauge.</li>
@@ -452,7 +482,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
 
     <div class="gcard reveal anim-shimmer" style="--c1:#ffd66b;--c2:#8f7cf0;">
-      <div class="gc-top"><div><span class="gc-id">TC-013</span> <span class="gc-title">CryptoNews AI &amp; YouTube Auto Bot</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
+      <div class="gc-top"><div><span class="gc-id">TC-014</span> <span class="gc-title">CryptoNews AI &amp; YouTube Auto Bot</span></div><span class="pill pass"><span class="dot"></span>shipped</span></div>
       <p>CryptoNews AI: real-time price tracking, Fear &amp; Greed sentiment, and CryptoBot chat powered by Groq LLaMA. YouTube Auto Bot: fully automated pipeline — scripts via Groq AI, voiceover via Edge TTS, footage via Pexels, assembled with MoviePy, published on a 24/7 scheduler.</p>
       <div class="gtags"><span class="gtag">Groq LLaMA</span><span class="gtag">Edge TTS</span><span class="gtag">MoviePy</span></div>
       <div class="glinks"><a href="https://ailivecrypto.vercel.app" target="_blank" rel="noopener">CryptoNews ↗</a><a href="https://www.youtube.com/@Ariblockchain" target="_blank" rel="noopener">YT Bot ↗</a></div>
@@ -519,7 +549,7 @@ footer{padding:36px 40px 60px;display:flex;justify-content:space-between;font-fa
     </div>
   </section>
 
-</div>
+</main>
 
 <footer>
   <span>© 2026 Sajid Manzoor</span>
@@ -544,6 +574,9 @@ const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ---- project count follows the cards, so it never goes stale ---- */
+document.getElementById('projectCount').dataset.count = document.querySelectorAll('#projects .gcard').length;
 
 /* ---- count-up stats ---- */
 const cio = new IntersectionObserver(entries => {
@@ -579,8 +612,16 @@ document.querySelectorAll('.stat-cell').forEach(c => barIo.observe(c));
 /* ---- nav toggle ---- */
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');
-navToggle.addEventListener('click', () => navMenu.classList.toggle('open'));
-navMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navMenu.classList.remove('open')));
+function setMenu(open){
+  navMenu.classList.toggle('open', open);
+  navToggle.setAttribute('aria-expanded', String(open));
+  navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  navToggle.textContent = open ? '✕' : '≡';
+}
+navToggle.addEventListener('click', () => setMenu(!navMenu.classList.contains('open')));
+navMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && navMenu.classList.contains('open')) { setMenu(false); navToggle.focus(); } });
+document.addEventListener('click', e => { if (navMenu.classList.contains('open') && !navEl.contains(e.target)) setMenu(false); });
 
 /* ---- magnetic buttons + 3D tilt + parallax orbs ---- */
 if (hasHover && !reducedMotion) {
