@@ -1403,7 +1403,13 @@ function cvDb(mode, fn) {
 }
 let cv = null; // { name, type, size, saved, blob }
 const kb = (n) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
-async function loadCv() { cv = (await cvDb('readonly', (s) => s.get('cv')).catch(() => null)) || null; renderCvUi(); }
+async function loadCv() {
+  const rec = await cvDb('readonly', (s) => s.get('cv')).catch(() => null);
+  // Older saves kept a Blob; newer ones keep the bytes.
+  const blob = rec && (rec.data ? new Blob([rec.data], { type: rec.type }) : rec.blob instanceof Blob ? rec.blob : null);
+  cv = blob ? { name: rec.name, type: rec.type, size: rec.size, saved: rec.saved, blob } : null;
+  renderCvUi();
+}
 function renderCvUi() {
   $('#cvStatus').innerHTML = cv ? `CV: <b>${esc(cv.name)}</b> <span class="muted">(${kb(cv.size)}, saved ${esc(cv.saved)})</span>` : 'No CV uploaded yet — add it once and attach it to any email.';
   $('#cvUpload').textContent = cv ? 'Replace' : 'Upload CV';
@@ -1419,9 +1425,12 @@ async function saveCv(file) {
   if (!CV_TYPES[ext]) throw new Error('Choose a PDF, DOC or DOCX file.');
   if (file.size > CV_MAX) throw new Error(`The CV is ${kb(file.size)}; please keep it under 3 MB (export the PDF with smaller images).`);
   if (ext === 'pdf' && new TextDecoder().decode(await file.slice(0, 4).arrayBuffer()) !== '%PDF') throw new Error('That file is not a valid PDF.');
-  const record = { name: file.name.slice(0, 100), type: CV_TYPES[ext], size: file.size, saved: today(), blob: file };
-  await cvDb('readwrite', (s) => s.put(record, 'cv'));
-  cv = record;
+  // Saved as raw bytes (works in every browser's IndexedDB) and marked persistent so the
+  // browser does not clear it to free space.
+  const data = await file.arrayBuffer();
+  await cvDb('readwrite', (s) => s.put({ name: file.name.slice(0, 100), type: CV_TYPES[ext], size: file.size, saved: today(), data }, 'cv'));
+  navigator.storage?.persist?.().catch(() => {});
+  cv = { name: file.name.slice(0, 100), type: CV_TYPES[ext], size: file.size, saved: today(), blob: new Blob([data], { type: CV_TYPES[ext] }) };
   renderCvUi();
 }
 const pickCv = () => $('#cvFile').click();
@@ -1541,21 +1550,55 @@ function openCompose({ company = '', role = '', contacts = [], skills = [], link
   ($('#mTo').value ? $('#mBody') : $('#mTo')).focus();
 }
 
+const cvFile = () => new File([cv.blob], cv.name, { type: cv.type });
+const attachOn = () => !!(cv && $('#mAttach').checked);
+// Phones and tablets: the share sheet hands the CV to the Gmail/Outlook app as an attachment.
+function canShareCv() {
+  if (!cv || !matchMedia('(pointer: coarse)').matches || !navigator.canShare) return false;
+  try { return navigator.canShare({ files: [cvFile()] }); } catch { return false; }
+}
 function renderMailActions() {
   const one = mailCfg.configured && !!mailKey();
-  let canShare = false;
-  try { canShare = !!(cv && navigator.canShare && navigator.canShare({ files: [new File([cv.blob], cv.name, { type: cv.type })] })); } catch { canShare = false; }
+  const withCv = attachOn();
   $('#mCopyWrap').hidden = !one;
   $('#mActions').innerHTML = one
     ? '<button class="btn primary" type="submit" id="mSend">Send email</button>'
-    : `<button class="btn primary" type="button" data-mail="gmail">Open in Gmail</button>
-       <button class="btn" type="button" data-mail="app">Email app</button>
-       ${cv ? '<button class="btn" type="button" data-mail="cv">Download CV to attach</button>' : ''}
-       ${canShare ? '<button class="btn" type="button" data-mail="share">Share with CV</button>' : ''}
+    : `<button class="btn primary" type="button" data-mail="app">${withCv ? 'Email app — CV attached' : 'Email app'}</button>
+       <button class="btn" type="button" data-mail="gmail">Open in Gmail</button>
+       ${cv ? '<button class="btn" type="button" data-mail="cv">Download CV</button>' : ''}
        <button class="btn" type="button" data-mail="done" hidden>✓ I sent it — mark as applied</button>`;
   $('#mNote').textContent = one
     ? `Sends from ${mailCfg.from}. One personal email per job — repeated or bulk emails get flagged as spam.`
-    : 'Gmail opens with everything filled in; attach your CV there before sending. For one-click sending with the CV attached, see Messages → Email & CV.';
+    : withCv
+      ? (canShareCv()
+        ? '“Email app” opens the share sheet: pick Gmail or Outlook — the CV is already attached. “Open in Gmail” (web) also downloads the CV to drag in.'
+        : '“Email app” downloads a ready draft (.eml) with the CV attached — open it and Outlook, Apple Mail or Thunderbird shows it ready to send. “Open in Gmail” (web) also downloads the CV to drag in.')
+      : cv ? 'Tick “Attach CV” to include your CV.' : 'Upload your CV (button above) to attach it to this email.';
+}
+$('#mAttach').addEventListener('change', () => { if ($('#mailDlg').open) renderMailActions(); });
+
+// A standard email file with the CV inside; "X-Unsent: 1" makes mail apps open it as a draft.
+const bytesB64 = (bytes) => { let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(bin); };
+const wrap76 = (s) => s.replace(/.{1,76}/g, '$&\r\n').trimEnd();
+const headerText = (s) => (/^[\x20-\x7e]*$/.test(s) ? s : `=?UTF-8?B?${bytesB64(new TextEncoder().encode(s))}?=`);
+async function emlDraft({ to, subject, text }) {
+  const boundary = `jc-${uid()}`;
+  const fileName = headerText(cv.name.replace(/["\\\r\n]/g, '_'));
+  return [
+    'X-Unsent: 1', `To: ${to}`, `Subject: ${headerText(subject)}`, 'MIME-Version: 1.0',
+    `Content-Type: multipart/mixed; boundary="${boundary}"`, '',
+    `--${boundary}`, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '',
+    wrap76(bytesB64(new TextEncoder().encode(text.replace(/\r?\n/g, '\r\n')))),
+    `--${boundary}`, `Content-Type: ${cv.type}; name="${fileName}"`, 'Content-Transfer-Encoding: base64',
+    `Content-Disposition: attachment; filename="${fileName}"`, '',
+    wrap76(bytesB64(new Uint8Array(await cv.blob.arrayBuffer()))),
+    `--${boundary}--`, '',
+  ].join('\r\n');
+}
+// mailto through a link click: the page (and the open dialog) stays as it is.
+function openMailto(href) {
+  const a = Object.assign(document.createElement('a'), { href });
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
 function readCompose() {
@@ -1637,10 +1680,19 @@ $('#mActions').addEventListener('click', async (e) => {
   try { msg = readCompose(); } catch (err) { $('#mError').textContent = err.message; return; }
   if (!alreadyEmailed(msg.to)) return;
   const enc = encodeURIComponent;
-  if (act === 'gmail') window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${enc(msg.to)}&su=${enc(msg.subject)}&body=${enc(msg.text)}`, '_blank', 'noopener');
-  if (act === 'app') window.location.href = `mailto:${enc(msg.to)}?subject=${enc(msg.subject)}&body=${enc(msg.text)}`;
-  if (act === 'share') {
-    try { await navigator.share({ title: msg.subject, text: `To: ${msg.to}\n\n${msg.text}`, files: [new File([cv.blob], cv.name, { type: cv.type })] }); } catch { return; }
+  if (act === 'gmail') {
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${enc(msg.to)}&su=${enc(msg.subject)}&body=${enc(msg.text)}`, '_blank', 'noopener');
+    // Gmail on the web cannot take a file through a link: have the CV ready to drag in.
+    if (attachOn()) { $('#cvDownload').click(); toast('Gmail opened and your CV downloaded — drag the CV into the Gmail window to attach it.'); }
+  }
+  if (act === 'app') {
+    if (!attachOn()) openMailto(`mailto:${enc(msg.to)}?subject=${enc(msg.subject)}&body=${enc(msg.text)}`);
+    else if (canShareCv()) {
+      try { await navigator.share({ title: msg.subject, text: `To: ${msg.to}\n\n${msg.text}`, files: [cvFile()] }); } catch { return; }
+    } else {
+      download(`Email to ${compose.company.replace(/[^\w .-]+/g, '').trim() || 'company'}.eml`, await emlDraft(msg), 'message/rfc822');
+      toast('Draft downloaded with your CV attached — open it to send from your email app.');
+    }
   }
   $('#mActions [data-mail="done"]').hidden = false;
 });
