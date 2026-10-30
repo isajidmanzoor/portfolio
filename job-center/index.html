@@ -1560,18 +1560,21 @@ function canShareCv() {
 function renderMailActions() {
   const one = mailCfg.configured && !!mailKey();
   const withCv = attachOn();
+  const share = withCv && canShareCv();
   $('#mCopyWrap').hidden = !one;
+  // On phones the share sheet attaches the CV but cannot fill "To" (an Android/iOS limit);
+  // the second button fills "To" and leaves attaching to the user.
   $('#mActions').innerHTML = one
     ? '<button class="btn primary" type="submit" id="mSend">Send email</button>'
-    : `<button class="btn primary" type="button" data-mail="app">${withCv ? 'Email app — CV attached' : 'Email app'}</button>
-       <button class="btn" type="button" data-mail="gmail">Open in Gmail</button>
+    : `<button class="btn primary" type="button" data-mail="app">${share ? 'Gmail app — CV attached' : withCv ? 'Email app — CV attached' : 'Email app'}</button>
+       ${share ? '<button class="btn" type="button" data-mail="mailto">Gmail app — To filled</button>' : `<button class="btn" type="button" data-mail="gmail">Open in Gmail</button>`}
        ${cv ? '<button class="btn" type="button" data-mail="cv">Download CV</button>' : ''}
        <button class="btn" type="button" data-mail="done" hidden>✓ I sent it — mark as applied</button>`;
   $('#mNote').textContent = one
     ? `Sends from ${mailCfg.from}. One personal email per job — repeated or bulk emails get flagged as spam.`
     : withCv
-      ? (canShareCv()
-        ? '“Email app” opens the share sheet: pick Gmail or Outlook — the CV is already attached. “Open in Gmail” (web) also downloads the CV to drag in.'
+      ? (share
+        ? '“CV attached”: pick Gmail in the share sheet — the address is copied, so long-press “To” and Paste. “To filled”: Gmail opens with the address, subject and message; the CV is saved to Downloads — attach it with 📎.'
         : '“Email app” downloads a ready draft (.eml) with the CV attached — open it and Outlook, Apple Mail or Thunderbird shows it ready to send. “Open in Gmail” (web) also downloads the CV to drag in.')
       : cv ? 'Tick “Attach CV” to include your CV.' : 'Upload your CV (button above) to attach it to this email.';
 }
@@ -1685,10 +1688,17 @@ $('#mActions').addEventListener('click', async (e) => {
     // Gmail on the web cannot take a file through a link: have the CV ready to drag in.
     if (attachOn()) { $('#cvDownload').click(); toast('Gmail opened and your CV downloaded — drag the CV into the Gmail window to attach it.'); }
   }
+  const mailto = `mailto:${enc(msg.to)}?subject=${enc(msg.subject)}&body=${enc(msg.text)}`;
+  if (act === 'mailto') {
+    openMailto(mailto);
+    if (attachOn()) { $('#cvDownload').click(); toast('CV saved to Downloads — in Gmail tap 📎 → Attach file to add it.'); }
+  }
   if (act === 'app') {
-    if (!attachOn()) openMailto(`mailto:${enc(msg.to)}?subject=${enc(msg.subject)}&body=${enc(msg.text)}`);
+    if (!attachOn()) openMailto(mailto);
     else if (canShareCv()) {
-      try { await navigator.share({ title: msg.subject, text: `To: ${msg.to}\n\n${msg.text}`, files: [cvFile()] }); } catch { return; }
+      // The share sheet cannot set the recipient: put the address on the clipboard instead of in the text.
+      copyText(msg.to).then((ok) => ok && toast(`${msg.to} copied — in Gmail long-press “To” and tap Paste.`));
+      try { await navigator.share({ title: msg.subject, text: msg.text, files: [cvFile()] }); } catch { return; }
     } else {
       download(`Email to ${compose.company.replace(/[^\w .-]+/g, '').trim() || 'company'}.eml`, await emlDraft(msg), 'message/rfc822');
       toast('Draft downloaded with your CV attached — open it to send from your email app.');
