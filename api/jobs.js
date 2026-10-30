@@ -35,6 +35,15 @@ const SKILLS = [
   ['AI/ML', /\b(?:ai|ml|llm|machine\s+learning)\b/i, 3],
   ['Banking/Fintech', /\b(?:bank\w*|fintech|payments?)\b/i, 3],
   ['Blockchain', /\b(?:blockchain|web3|crypto)\b/i, 3],
+  // Not on Sajid's profile yet: tracked for the market view, no effect on the score.
+  ['SQL', /\bsql\b/i, 0],
+  ['CI/CD', /\b(?:ci\/cd|jenkins|github\s+actions|gitlab\s+ci|circleci)\b/i, 0],
+  ['Java', /\bjava\b(?!\s*script)/i, 0],
+  ['TypeScript', /\btypescript\b/i, 0],
+  ['Appium', /\bappium\b/i, 0],
+  ['Docker', /\bdocker\b/i, 0],
+  ['AWS', /\baws\b/i, 0],
+  ['BDD/Cucumber', /\b(?:cucumber|bdd|gherkin)\b/i, 0],
 ];
 
 const OPEN_TO_PK = /\b(?:worldwide|anywhere|global(?:ly)?|pakistan|asia|apac|emea|international)\b/i;
@@ -48,12 +57,12 @@ export function scoreJob(job) {
   const reasons = ['QA/testing role'];
   let score = 50;
   const text = `${job.title} ${(job.tags || []).join(' ')} ${job.text || ''}`;
-  const skills = [];
+  const skills = [], fits = [];
   let skillPts = 0;
-  for (const [name, re, pts] of SKILLS) if (re.test(text)) { skills.push(name); skillPts += pts; }
+  for (const [name, re, pts] of SKILLS) if (re.test(text)) { skills.push(name); skillPts += pts; if (pts) fits.push(name); }
   // Long descriptions list every tool; cap so the score still separates good fits from the rest.
   score += Math.min(24, skillPts);
-  if (skills.length) reasons.push(skills.slice(0, 3).join(', '));
+  if (fits.length) reasons.push(fits.slice(0, 3).join(', '));
   // Sajid has about 2 years of experience: junior/mid roles fit best.
   if (/\b(?:senior|sr\.?|lead|principal|staff|head|director|manager|architect|vp)\b/i.test(job.title)) { score -= 15; reasons.push('Senior level'); }
   else if (/\b(?:junior|jr\.?|associate|mid|intermediate|entry)\b/i.test(job.title)) { score += 6; reasons.push('Junior/mid level'); }
