@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Application Command Center — Sajid Manzoor</title>
+<title>Job Center — Sajid Manzoor</title>
+<meta name="description" content="Sajid Manzoor's job search command center: live QA/testing jobs scored for fit, an application tracker with follow-up reminders, and tailored outreach messages.">
+<meta name="theme-color" content="#0f1115">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1115'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='34' fill='%234fd1c5'%3EJC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -13,7 +18,7 @@
   --border:#262b33;
   --text:#e8eaed;
   --text-dim:#9aa1ab;
-  --text-dimmer:#5f6570;
+  --text-dimmer:#6b717c;
   --accent:#4fd1c5;
   --accent-dim:#1f3a37;
   --amber:#f6c86a;
@@ -25,216 +30,228 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
-body{
-  background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;
-  -webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;
-}
-.app{max-width:100vw;}
-.main{max-width:100%;overflow-x:hidden;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden;}
 button, input, textarea, select{font-family:inherit;}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 ::selection{background:var(--accent-dim);color:var(--accent);}
+[hidden]{display:none !important;}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 
-.app{display:flex;height:100vh;}
+.app{display:flex;height:100vh;height:100dvh;max-width:100vw;}
 
 /* ---------- sidebar ---------- */
-.sidebar{
-  width:220px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:20px 14px;
-}
-.brand{font-weight:700;font-size:15px;padding:8px 10px 20px;color:var(--text);}
+.sidebar{width:228px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 14px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--text-dimmer);font-size:12px;text-decoration:none;padding:4px 10px;margin-bottom:10px;border-radius:6px;}
+.back-link:hover{color:var(--accent);}
+.brand{font-weight:700;font-size:15px;padding:4px 10px 18px;color:var(--text);}
 .brand .dim{color:var(--text-dimmer);font-weight:500;}
 .nav{display:flex;flex-direction:column;gap:2px;}
-.nav button{
-  display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text-dim);
-  padding:10px 10px;border-radius:8px;font-size:13.5px;text-align:left;cursor:pointer;transition:background .15s,color .15s;
-}
-.nav button:hover{background:var(--panel-alt);color:var(--text);}
-.nav button.active{background:var(--accent-dim);color:var(--accent);font-weight:600;}
+.nav a{display:flex;align-items:center;gap:10px;color:var(--text-dim);padding:10px;border-radius:8px;font-size:13.5px;text-decoration:none;transition:background .15s,color .15s;position:relative;}
+.nav a:hover{background:var(--panel-alt);color:var(--text);}
+.nav a[aria-current="page"]{background:var(--accent-dim);color:var(--accent);font-weight:600;}
 .nav .icon{width:16px;height:16px;flex-shrink:0;}
-.sidebar-foot{margin-top:auto;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text-dimmer);}
+.nav .count{margin-left:auto;font-family:var(--mono);font-size:10.5px;background:var(--accent);color:#08211d;border-radius:10px;padding:0 6px;font-weight:600;}
+.sidebar-foot{margin-top:auto;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text-dimmer);line-height:1.7;}
 .sidebar-foot .n{color:var(--accent);font-weight:600;}
 
 /* ---------- main ---------- */
-.main{flex:1;overflow-y:auto;padding:36px 44px 60px;}
-.view{display:none;max-width:760px;}
-.view.active{display:block;}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:34px 44px 60px;max-width:100%;}
+.view{max-width:860px;}
 h1{font-size:22px;font-weight:700;margin-bottom:4px;}
-.sub{color:var(--text-dim);font-size:13.5px;margin-bottom:28px;}
+.sub{color:var(--text-dim);font-size:13.5px;margin-bottom:24px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+
+input, select, textarea{background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-size:13px;min-width:0;}
+input::placeholder, textarea::placeholder{color:var(--text-dimmer);}
+input[type="date"]{color-scheme:dark;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:8px 13px;font-size:12.5px;cursor:pointer;text-decoration:none;transition:border-color .15s,color .15s,background .15s;white-space:nowrap;}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn.primary{background:var(--accent);color:#08211d;border-color:var(--accent);font-weight:600;}
+.btn.primary:hover:not(:disabled){background:#6fe0d5;color:#08211d;}
+.btn.small{padding:5px 10px;font-size:11.5px;}
+.error{color:var(--red);font-size:12.5px;min-height:1em;}
+.muted{color:var(--text-dimmer);}
 
 /* ---------- tracker ---------- */
-.quick-search{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-.qs-btn{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:9px 14px;font-size:12.5px;text-decoration:none;transition:border-color .15s,color .15s;}
-.qs-btn:hover{border-color:var(--accent);color:var(--accent);}
-.qs-btn svg{width:14px;height:14px;}
-.add-form{
-  background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;
-}
-.form-row{display:grid;grid-template-columns:1.3fr 1.3fr 1fr 1fr;gap:10px;margin-bottom:10px;min-width:0;}
-.form-row > *{min-width:0;}
+.quick-search{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.quick-search svg{width:14px;height:14px;}
+.add-form{margin-bottom:18px;}
+.form-row{display:grid;grid-template-columns:1.3fr 1.3fr 1fr 1fr;gap:10px;margin-bottom:10px;}
 .form-row.two{grid-template-columns:1fr 1fr;}
-.form-row input, .form-row select{
-  background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-size:13px;
-}
-.form-row input::placeholder{color:var(--text-dimmer);}
-.add-btn{
-  background:var(--accent);color:#08211d;font-weight:600;border:none;border-radius:7px;padding:9px 18px;font-size:13px;cursor:pointer;transition:opacity .15s;
-}
-.add-btn:hover{opacity:.88;}
-.add-btn:active{transform:scale(.98);}
-
-.stats-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-.stat-pill{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:7px;}
+.form-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nudge{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(246,200,106,.08);border:1px solid rgba(246,200,106,.45);color:var(--amber);border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:13px;}
+.stats-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.stat-pill{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:7px;}
 .stat-pill b{color:var(--text);font-family:var(--mono);}
-
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.toolbar input[type="search"]{flex:1;min-width:160px;}
 .table{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.trow{display:grid;grid-template-columns:1.4fr 1.4fr 1fr 0.9fr 0.6fr;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;min-width:0;}
-.trow > *{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.trow{display:grid;grid-template-columns:1.3fr 1.5fr .9fr .95fr auto;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;}
+.trow > *{min-width:0;}
 .trow:last-child{border-bottom:none;}
 .trow.head{background:var(--panel-alt);color:var(--text-dimmer);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;}
-.trow .company{font-weight:600;}
-.trow .role{color:var(--text-dim);}
-.trow .date{font-family:var(--mono);color:var(--text-dimmer);font-size:12px;}
-.status-select{
-  background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11.5px;cursor:pointer;
-}
+.trow .company{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.trow .company a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--text-dimmer);}
+.trow .company a:hover{color:var(--accent);border-color:var(--accent);}
+.trow .role{color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.trow .date{font-family:var(--mono);color:var(--text-dimmer);font-size:11.5px;}
+.badge{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.03em;text-transform:uppercase;border-radius:8px;padding:1px 7px;border:1px solid;vertical-align:1px;}
+.badge.follow{color:var(--amber);border-color:var(--amber);}
+.badge.new{color:var(--green);border-color:var(--green);}
+.status-select{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11.5px;cursor:pointer;}
 .status-select.saved{color:var(--grey);border-color:var(--grey);}
 .status-select.applied{color:var(--accent);border-color:var(--accent);}
 .status-select.interview{color:var(--amber);border-color:var(--amber);}
 .status-select.offer{color:var(--green);border-color:var(--green);}
 .status-select.rejected{color:var(--red);border-color:var(--red);}
-.row-actions{display:flex;gap:8px;justify-content:flex-end;}
-.icon-btn{background:none;border:none;color:var(--text-dimmer);cursor:pointer;padding:4px;border-radius:5px;transition:color .15s,background .15s;}
-.icon-btn:hover{color:var(--red);background:var(--panel-alt);}
-.empty{padding:44px 20px;text-align:center;color:var(--text-dimmer);font-size:13.5px;}
+.status-select option{background:var(--panel);color:var(--text);}
+.row-actions{display:flex;gap:2px;justify-content:flex-end;}
+.icon-btn{background:none;border:none;color:var(--text-dimmer);cursor:pointer;padding:6px;border-radius:6px;display:inline-flex;transition:color .15s,background .15s;}
+.icon-btn:hover{color:var(--accent);background:var(--panel-alt);}
+.icon-btn.danger:hover{color:var(--red);}
+.icon-btn svg{width:15px;height:15px;}
+.notes-row{grid-column:1/-1;}
+.notes-row textarea{width:100%;min-height:64px;resize:vertical;}
+.empty{padding:40px 20px;text-align:center;color:var(--text-dimmer);font-size:13.5px;}
+.backup{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;font-size:12px;}
 
 /* ---------- generator ---------- */
-.gen-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;min-width:0;}
+.gen-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
 .gen-layout > *{min-width:0;}
-@media (max-width:820px){ .gen-layout{grid-template-columns:1fr;} }
-.gen-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;}
-.field-label{font-size:11.5px;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:block;}
-textarea{
-  width:100%;min-height:180px;background:var(--panel-alt);border:1px solid var(--border);color:var(--text);
-  border-radius:8px;padding:12px;font-size:13.5px;resize:vertical;line-height:1.5;
-}
-.type-row{display:flex;gap:8px;margin:14px 0 16px;flex-wrap:wrap;}
-.type-chip{
-  background:var(--panel-alt);border:1px solid var(--border);color:var(--text-dim);border-radius:20px;
-  padding:7px 14px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s;
-}
-.type-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
-.gen-btn{
-  width:100%;background:var(--accent);color:#08211d;font-weight:700;border:none;border-radius:8px;padding:12px;font-size:13.5px;cursor:pointer;
-}
-.gen-btn:disabled{opacity:.5;cursor:default;}
-.result-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:280px;display:flex;flex-direction:column;}
-.result-text{white-space:pre-wrap;font-size:13.5px;color:var(--text);line-height:1.65;flex:1;}
-.result-placeholder{color:var(--text-dimmer);font-size:13px;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;}
-.copy-btn{margin-top:14px;align-self:flex-start;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:8px 14px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s;}
-.copy-btn:hover{border-color:var(--accent);color:var(--accent);}
-.spinner{width:16px;height:16px;border:2px solid rgba(8,33,29,0.3);border-top-color:#08211d;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.error-box{color:var(--red);font-size:12.5px;margin-top:10px;}
+.field-label{font-size:11px;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;display:block;}
+.gen-layout textarea{width:100%;resize:vertical;line-height:1.55;font-size:13.5px;}
+.type-row{display:flex;gap:7px;margin:14px 0 14px;flex-wrap:wrap;}
+.type-chip{background:var(--panel-alt);border:1px solid var(--border);color:var(--text-dim);border-radius:20px;padding:6px 13px;font-size:12.5px;cursor:pointer;}
+.type-chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.match-box{margin-top:14px;font-size:12.5px;color:var(--text-dim);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.chip{font-family:var(--mono);font-size:10.5px;border:1px solid var(--border);border-radius:10px;padding:2px 8px;color:var(--text-dim);}
+.chip.have{color:var(--green);border-color:rgba(126,224,160,.6);}
+.chip.gap{color:var(--amber);border-color:rgba(246,200,106,.6);}
+.result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+.counter{font-family:var(--mono);font-size:11px;color:var(--text-dimmer);margin-left:auto;}
+.counter.over{color:var(--red);}
 
-/* ---------- alerts guide ---------- */
-.alert-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
-.lj-banner{display:block;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:22px;font-size:13.5px;text-decoration:none;cursor:pointer;transition:background .15s;}
+/* ---------- alerts ---------- */
+.lj-banner{display:block;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:13px 16px;margin-bottom:18px;font-size:13.5px;text-decoration:none;}
 .lj-banner:hover{background:rgba(79,209,197,0.2);}
-.lj-controls{display:flex;gap:10px;margin-bottom:14px;}
-.lj-controls input{flex:1;background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 12px;font-size:13px;}
-.lj-status{color:var(--text-dimmer);font-size:13px;margin-bottom:16px;}
-.lj-src{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:8px;border:1px solid;}
-.lj-src.arbeitnow{color:#6fa8ff;border-color:#6fa8ff;}
-.lj-src.remotive{color:#4fd1c5;border-color:#4fd1c5;}
-.lj-src.remoteok{color:#ff9d4d;border-color:#ff9d4d;}
-.lj-list{display:flex;flex-direction:column;gap:12px;}
-.lj-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
-.lj-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
-.lj-title{font-weight:600;font-size:14.5px;}
-.lj-company{color:var(--text-dim);font-size:13px;margin-bottom:6px;}
-.lj-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-.lj-tag{font-family:var(--mono);font-size:10px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:10px;}
-.lj-tag.remote{color:var(--accent);border-color:var(--accent);}
-.lj-actions{display:flex;gap:10px;}
-.lj-btn{font-size:12px;border-radius:6px;padding:7px 12px;text-decoration:none;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;background:none;}
-.lj-btn.primary{background:var(--accent);color:#08211d;border:none;font-weight:600;}
-.lj-btn:hover{border-color:var(--accent);color:var(--accent);}
-
-.alert-card h3{font-size:14.5px;margin-bottom:8px;}
+.alert-card{margin-bottom:12px;}
+.alert-card h3{font-size:14.5px;margin-bottom:6px;}
 .alert-card p{color:var(--text-dim);font-size:13px;margin-bottom:10px;}
-.copy-line{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel-alt);
-  border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-family:var(--mono);font-size:12px;color:var(--text-dim);
-}
-.copy-line button{background:none;border:none;color:var(--accent);font-size:11.5px;cursor:pointer;flex-shrink:0;}
+.copy-line{display:flex;align-items:center;gap:8px;background:var(--panel-alt);border:1px solid var(--border);border-radius:7px;padding:7px 8px 7px 12px;font-family:var(--mono);font-size:12px;color:var(--text-dim);flex-wrap:wrap;}
+.copy-line span{flex:1;min-width:160px;}
 
-@media (max-width:700px){
-  .sidebar{width:64px;padding:16px 8px;}
-  .brand, .nav button span.label, .sidebar-foot{display:none;}
-  .nav button{justify-content:center;}
-  .main{padding:24px 18px 50px;}
+/* ---------- live jobs ---------- */
+.lj-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.toggle{display:inline-flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12.5px;color:var(--text-dim);cursor:pointer;user-select:none;}
+.toggle input{accent-color:var(--accent);margin:0;}
+.toggle:has(input:checked){border-color:var(--accent);color:var(--accent);}
+.lj-status{color:var(--text-dimmer);font-size:12.5px;margin-bottom:6px;}
+.sources{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.src{font-family:var(--mono);font-size:10px;border-radius:8px;padding:1px 7px;border:1px solid var(--border);color:var(--text-dimmer);}
+.src.ok{color:var(--text-dim);}
+.src.down{color:var(--red);border-color:rgba(242,125,125,.5);}
+.lj-list{display:flex;flex-direction:column;gap:12px;}
+.lj-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;}
+.lj-card.is-new{border-color:rgba(126,224,160,.45);}
+.score{grid-row:span 3;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:13px;border:2px solid;}
+.score.hi{color:var(--green);border-color:var(--green);}
+.score.mid{color:var(--accent);border-color:var(--accent);}
+.score.lo{color:var(--text-dimmer);border-color:var(--border);}
+.lj-title{font-weight:600;font-size:14.5px;}
+.lj-company{color:var(--text-dim);font-size:13px;}
+.lj-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0 2px;}
+.lj-tag{font-family:var(--mono);font-size:10px;color:var(--text-dim);border:1px solid var(--border);padding:1px 8px;border-radius:10px;}
+.lj-tag.pk{color:var(--green);border-color:rgba(126,224,160,.6);}
+.lj-tag.money{color:var(--amber);border-color:rgba(246,200,106,.5);}
+.lj-why{grid-column:2;font-size:12px;color:var(--text-dimmer);}
+.lj-summary{grid-column:2;font-size:12.5px;color:var(--text-dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;}
+.lj-actions{grid-column:2;display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.more{margin-top:14px;}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--panel-alt);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px 10px 16px;font-size:13px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:50;max-width:calc(100vw - 32px);}
+
+@media (max-width:820px){
+  .gen-layout{grid-template-columns:1fr;}
   .form-row{grid-template-columns:1fr 1fr;}
-  .trow{grid-template-columns:1fr;gap:4px;}
-  .trow.head{display:none;}
-  .row-actions{justify-content:flex-start;margin-top:6px;}
 }
+@media (max-width:700px){
+  .app{flex-direction:column;}
+  .sidebar{order:2;width:100%;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-right:none;border-top:1px solid var(--border);}
+  .back-link, .brand, .sidebar-foot{display:none;}
+  .nav{flex-direction:row;width:100%;justify-content:space-around;}
+  .nav a{flex-direction:column;gap:3px;font-size:10.5px;padding:7px 4px;flex:1;text-align:center;}
+  .nav .count{position:absolute;top:2px;right:calc(50% - 22px);margin:0;}
+  .main{padding:18px 16px 30px;}
+  .mobile-top{display:flex !important;}
+  .trow{grid-template-columns:1fr auto;gap:6px 10px;}
+  .trow.head{display:none;}
+  .trow .company{grid-area:1/1;}
+  .trow .date{grid-area:1/2;text-align:right;}
+  .trow .role{grid-area:2/1/3/3;white-space:normal;}
+  .trow .status-cell{grid-area:3/1;}
+  .row-actions{grid-area:3/2;}
+  .notes-row{grid-area:4/1/5/3;}
+  .lj-card{grid-template-columns:1fr;}
+  .score{grid-row:auto;width:40px;height:40px;font-size:12px;}
+  .lj-why, .lj-summary, .lj-actions{grid-column:1;}
+}
+.mobile-top{display:none;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12.5px;}
+.mobile-top a{color:var(--text-dimmer);text-decoration:none;}
 </style>
 </head>
 <body>
 
 <div class="app">
   <aside class="sidebar">
+    <a class="back-link" href="/">← Portfolio</a>
     <div class="brand">Job Center<br><span class="dim">Sajid Manzoor</span></div>
-    <nav class="nav">
-      <button class="nav-btn active" data-view="tracker">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
-        <span class="label">Tracker</span>
-      </button>
-      <button class="nav-btn" data-view="generate">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg>
-        <span class="label">Generate</span>
-      </button>
-      <button class="nav-btn" data-view="alerts">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-        <span class="label">Alerts</span>
-      </button>
-      <button class="nav-btn" data-view="livejobs">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <span class="label">Live Jobs</span>
-      </button>
+    <nav class="nav" aria-label="Job Center">
+      <a href="#tracker" data-view="tracker">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+        <span>Tracker</span><span class="count" id="navFollow" hidden></span>
+      </a>
+      <a href="#live" data-view="live">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>Live Jobs</span><span class="count" id="navNew" hidden></span>
+      </a>
+      <a href="#generate" data-view="generate">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 00-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg>
+        <span>Messages</span>
+      </a>
+      <a href="#alerts" data-view="alerts">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span>Alerts</span>
+      </a>
     </nav>
-    <div class="sidebar-foot" id="sidebarStats">Loading…</div>
+    <div class="sidebar-foot" id="sidebarStats"></div>
   </aside>
 
-  <main class="main">
+  <main class="main" id="main">
+    <div class="mobile-top"><a href="/">← Portfolio</a><span class="muted">Job Center</span></div>
 
-    <!-- TRACKER VIEW -->
-    <section class="view active" id="view-tracker">
-      <h1>Application Tracker</h1>
-      <p class="sub">Every job you apply to, in one place. Nothing here leaves your account.</p>
+    <!-- TRACKER -->
+    <section class="view" id="view-tracker" hidden>
+      <h1 tabindex="-1">Application Tracker</h1>
+      <p class="sub">Every job you apply to, in one place. Saved in this browser only — export a backup now and then.</p>
 
       <div class="quick-search">
-        <a class="qs-btn" href="https://www.linkedin.com/jobs/search/?keywords=SQA%20Engineer%20OR%20QA%20Automation" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.94 6 2.5 6S0 4.88 0 3.5 1.06 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.83-2.05 3.77-2.05C19.5 8 21 10.2 21 14.14V23h-4v-8.02c0-1.9-.03-4.35-2.65-4.35-2.65 0-3.05 2.07-3.05 4.21V23h-4V8z"/></svg>
-          LinkedIn
-        </a>
-        <a class="qs-btn" href="https://www.indeed.com/jobs?q=QA+Automation+Playwright" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-          Indeed
-        </a>
-        <a class="qs-btn" href="https://www.rozee.pk/job/jsearch/q/SQA-Engineer" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-          Rozee.pk
-        </a>
+        <a class="btn" href="https://www.linkedin.com/jobs/search/?keywords=SQA%20Engineer%20OR%20QA%20Automation&amp;location=Pakistan" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.94 6 2.5 6S0 4.88 0 3.5 1.06 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.83-2.05 3.77-2.05C19.5 8 21 10.2 21 14.14V23h-4v-8.02c0-1.9-.03-4.35-2.65-4.35-2.65 0-3.05 2.07-3.05 4.21V23h-4V8z"/></svg>LinkedIn ↗</a>
+        <a class="btn" href="https://pk.indeed.com/jobs?q=QA+Automation+Engineer" target="_blank" rel="noopener">Indeed PK ↗</a>
+        <a class="btn" href="https://www.rozee.pk/job/jsearch/q/SQA-Engineer" target="_blank" rel="noopener">Rozee.pk ↗</a>
+        <a class="btn" href="#live">Live QA jobs →</a>
       </div>
 
-      <div class="add-form">
+      <form class="panel add-form" id="addForm" novalidate>
         <div class="form-row">
-          <input id="f-company" placeholder="Company" />
-          <input id="f-role" placeholder="Role" />
-          <input id="f-date" type="date" />
-          <select id="f-status">
+          <input id="f-company" placeholder="Company *" aria-label="Company" autocomplete="off">
+          <input id="f-role" placeholder="Role *" aria-label="Role" autocomplete="off">
+          <input id="f-date" type="date" aria-label="Date applied">
+          <select id="f-status" aria-label="Status">
             <option value="saved">Saved</option>
             <option value="applied" selected>Applied</option>
             <option value="interview">Interview</option>
@@ -243,462 +260,735 @@ textarea{
           </select>
         </div>
         <div class="form-row two">
-          <input id="f-link" placeholder="Job link (optional)" />
-          <input id="f-notes" placeholder="Note (optional)" />
+          <input id="f-link" type="url" placeholder="Job link (optional)" aria-label="Job link">
+          <input id="f-notes" placeholder="Note (optional)" aria-label="Note">
         </div>
-        <button class="add-btn" id="addBtn">Add application</button>
-      </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Add application</button>
+          <span class="error" id="addError" role="alert"></span>
+        </div>
+      </form>
 
+      <div class="nudge" id="followNudge" hidden></div>
       <div class="stats-row" id="statsRow"></div>
+      <div class="toolbar">
+        <input type="search" id="tSearch" placeholder="Search company, role or note" aria-label="Search applications">
+        <select id="tFilter" aria-label="Filter by status">
+          <option value="all">All statuses</option>
+          <option value="follow">Needs follow-up</option>
+          <option value="saved">Saved</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
       <div class="table" id="tableWrap"></div>
+      <div class="backup">
+        <span class="muted">Backup:</span>
+        <button class="btn small" type="button" id="exportJson">Export JSON</button>
+        <button class="btn small" type="button" id="exportCsv">Export CSV</button>
+        <button class="btn small" type="button" id="importBtn">Import JSON</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <span class="error" id="backupMsg" role="status"></span>
+      </div>
     </section>
 
-    <!-- GENERATE VIEW -->
-    <section class="view" id="view-generate">
-      <h1>Tailored Message Generator</h1>
-      <p class="sub">Paste a job description. Get a message written around it, in your voice, in seconds.</p>
+    <!-- LIVE JOBS -->
+    <section class="view" id="view-live" hidden>
+      <h1 tabindex="-1">Live QA Jobs</h1>
+      <p class="sub">Software QA and testing roles from five job boards, refreshed every 15 minutes and scored for your profile (Playwright, API testing, about 2 years’ experience, based in Lahore).</p>
+      <div class="toolbar">
+        <input type="search" id="ljSearch" placeholder="Filter (e.g. playwright, fintech, junior)" aria-label="Filter jobs">
+        <select id="ljSort" aria-label="Sort jobs">
+          <option value="score">Best match</option>
+          <option value="new">Newest</option>
+        </select>
+        <button class="btn" type="button" id="ljRefresh">↻ Refresh</button>
+      </div>
+      <div class="lj-filters">
+        <label class="toggle"><input type="checkbox" id="fPk" checked> Open to Pakistan</label>
+        <label class="toggle"><input type="checkbox" id="fRecent"> Last 7 days</label>
+        <label class="toggle"><input type="checkbox" id="fSenior"> Hide senior/lead</label>
+      </div>
+      <div class="lj-status" id="ljStatus" role="status">Loading live listings…</div>
+      <div class="sources" id="ljSources"></div>
+      <div class="lj-list" id="ljList"></div>
+      <div class="more"><button class="btn small" type="button" id="ljShowHidden" hidden></button></div>
+    </section>
 
+    <!-- MESSAGES -->
+    <section class="view" id="view-generate" hidden>
+      <h1 tabindex="-1">Tailored Messages</h1>
+      <p class="sub">Paste the job description: the message picks up the skills the job asks for that you actually have, and shows the gaps to prepare for.</p>
       <div class="gen-layout">
-        <div class="gen-panel">
-          <div class="form-row two" style="margin-bottom:14px;">
-            <input id="gen-company" placeholder="Company name" />
-            <input id="gen-role" placeholder="Role title" />
+        <div class="panel">
+          <div class="form-row two" style="margin-bottom:12px;">
+            <input id="gen-company" placeholder="Company *" aria-label="Company" autocomplete="off">
+            <input id="gen-role" placeholder="Role *" aria-label="Role" autocomplete="off">
           </div>
-          <span class="field-label">Job description (optional, for your reference)</span>
-          <textarea id="jdInput" placeholder="Paste the job description here…" style="min-height:110px;"></textarea>
-          <div class="type-row">
-            <div class="type-chip active" data-type="Recruiter email">Recruiter email</div>
-            <div class="type-chip" data-type="LinkedIn connection note">LinkedIn note</div>
-            <div class="type-chip" data-type="Cover letter">Cover letter</div>
+          <label class="field-label" for="jdInput">Job description (recommended)</label>
+          <textarea id="jdInput" rows="7" placeholder="Paste the job description here…"></textarea>
+          <div class="type-row" role="group" aria-label="Message type">
+            <button type="button" class="type-chip" aria-pressed="true" data-type="email">Recruiter email</button>
+            <button type="button" class="type-chip" aria-pressed="false" data-type="linkedin">LinkedIn note</button>
+            <button type="button" class="type-chip" aria-pressed="false" data-type="cover">Cover letter</button>
+            <button type="button" class="type-chip" aria-pressed="false" data-type="followup">Follow-up</button>
+            <button type="button" class="type-chip" aria-pressed="false" data-type="thanks">Thank-you</button>
           </div>
-          <button class="gen-btn" id="genBtn">Generate message</button>
-          <div class="error-box" id="genError"></div>
+          <button class="btn primary" type="button" id="genBtn" style="width:100%;padding:11px;">Write message</button>
+          <div class="error" id="genError" role="alert" style="margin-top:8px;"></div>
+          <div class="match-box" id="matchBox" hidden></div>
         </div>
-        <div class="result-panel">
-          <span class="field-label">Result</span>
-          <div class="result-placeholder" id="resultPlaceholder">Your tailored message will show up here.</div>
-          <div class="result-text" id="resultText" style="display:none;"></div>
-          <button class="copy-btn" id="copyBtn" style="display:none;">Copy to clipboard</button>
+        <div class="panel">
+          <label class="field-label" for="resultText">Message — edit freely before sending</label>
+          <textarea id="resultText" rows="16" placeholder="Your message will appear here."></textarea>
+          <div class="result-actions">
+            <button class="btn" type="button" id="copyBtn" disabled>Copy</button>
+            <a class="btn" id="mailBtn" href="#" hidden>Open in email app</a>
+            <button class="btn" type="button" id="saveGenBtn" disabled>Save to tracker</button>
+            <span class="counter" id="charCount"></span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ALERTS VIEW -->
-    <section class="view" id="view-alerts">
-      <h1>Job Alerts Setup</h1>
-      <p class="sub">Set these up once — new matching jobs land in your inbox automatically, no bot needed.</p>
+    <!-- ALERTS -->
+    <section class="view" id="view-alerts" hidden>
+      <h1 tabindex="-1">Job Alerts</h1>
+      <p class="sub">Two kinds: browser notifications from Live Jobs while this page is open, and email alerts the job boards send you every day.</p>
 
-      <a href="#" class="lj-banner" id="goLiveJobsBanner">
-        <span>🔔 Want instant browser notifications instead? Turn on Live Alerts →</span>
-      </a>
+      <div class="panel alert-card">
+        <h3>Browser notifications</h3>
+        <p id="notifText">Checks Live Jobs every 5 minutes while this page is open in a tab, and notifies you about new good matches (score 60+, respecting the “Open to Pakistan” filter).</p>
+        <div class="form-actions"><button class="btn primary" type="button" id="notifToggle">Turn on notifications</button><span class="error" id="notifMsg" role="status"></span></div>
+      </div>
 
-      <div class="alert-card">
+      <div class="panel alert-card">
         <h3>LinkedIn</h3>
-        <p>Jobs tab → search below → toggle "Alert frequency" to Daily.</p>
-        <div class="copy-line"><span id="li-query">SQA Engineer OR QA Automation Engineer — Lahore / Remote</span><button data-copy="li-query">Copy</button></div>
+        <p>Open the search, then switch on “Job alert” at the top of the results.</p>
+        <div class="copy-line"><span id="li-query">SQA Engineer OR QA Automation Engineer — Pakistan / Remote</span><button class="btn small" type="button" data-copy="li-query">Copy</button><a class="btn small" href="https://www.linkedin.com/jobs/search/?keywords=SQA%20Engineer%20OR%20QA%20Automation%20Engineer&amp;location=Pakistan" target="_blank" rel="noopener">Open ↗</a></div>
       </div>
-      <div class="alert-card">
-        <h3>Indeed</h3>
-        <p>Search below → click "Get new jobs for this search by email".</p>
-        <div class="copy-line"><span id="in-query">Manual QA Automation Playwright Postman</span><button data-copy="in-query">Copy</button></div>
+      <div class="panel alert-card">
+        <h3>Indeed Pakistan</h3>
+        <p>Open the search, then choose “Get new jobs for this search by email”.</p>
+        <div class="copy-line"><span id="in-query">QA Automation Playwright Postman</span><button class="btn small" type="button" data-copy="in-query">Copy</button><a class="btn small" href="https://pk.indeed.com/jobs?q=QA+Automation+Playwright+Postman" target="_blank" rel="noopener">Open ↗</a></div>
       </div>
-      <div class="alert-card">
+      <div class="panel alert-card">
         <h3>Rozee.pk</h3>
-        <p>Set up a Job Alert in your profile settings with these keywords.</p>
-        <div class="copy-line"><span id="rz-query">SQA Engineer, QA Automation, Software Tester</span><button data-copy="rz-query">Copy</button></div>
+        <p>Create a Job Alert in your profile settings with these keywords.</p>
+        <div class="copy-line"><span id="rz-query">SQA Engineer, QA Automation, Software Tester</span><button class="btn small" type="button" data-copy="rz-query">Copy</button><a class="btn small" href="https://www.rozee.pk/job/jsearch/q/SQA-Engineer" target="_blank" rel="noopener">Open ↗</a></div>
       </div>
     </section>
-
-    <!-- LIVE JOBS VIEW -->
-    <section class="view" id="view-livejobs">
-      <h1>Live Jobs — Worldwide</h1>
-      <p class="sub">Live QA &amp; testing roles from around the world, pulled in automatically and filtered just for you.</p>
-      <div class="lj-controls">
-        <input id="ljSearch" placeholder="Filter results (e.g. 'remote', 'senior', 'python')..." />
-        <button class="lj-btn" id="ljRefresh">↻ Refresh</button>
-        <button class="lj-btn" id="ljNotifToggle">🔔 Enable Alerts</button>
-      </div>
-      <div id="ljNotifStatus" class="lj-status" style="display:none;"></div>
-      <div id="liveJobsStatus" class="lj-status">Loading live listings…</div>
-      <div id="liveJobsList" class="lj-list"></div>
-    </section>
-
   </main>
 </div>
 
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button class="btn small" type="button" id="toastAction" hidden></button></div>
+
 <script>
-/* ---------------- navigation ---------------- */
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('view-' + btn.dataset.view).classList.add('active');
-  });
-});
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = (u) => (/^https?:\/\//i.test(String(u || '').trim()) ? String(u).trim() : '');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const DAY = 864e5;
+// Local date (YYYY-MM-DD): toISOString() would give yesterday's date before 5 am in Pakistan.
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const daysSince = (ymd) => { const t = Date.parse(ymd + 'T00:00:00'); return Number.isNaN(t) ? 0 : Math.floor((Date.parse(today() + 'T00:00:00') - t) / DAY); };
+function ago(ms) {
+  if (!ms) return '';
+  const m = Math.max(0, Math.round((Date.now() - ms) / 6e4));
+  if (m < 60) return `${m || 1}m ago`;
+  if (m < 1440) return `${Math.round(m / 60)}h ago`;
+  return `${Math.round(m / 1440)}d ago`;
+}
+const store = {
+  get(key, fallback) { try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } },
+  set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { toast('Could not save: browser storage is full or blocked.'); return false; } },
+};
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function toast(text, action, onAction) {
+  $('#toastText').textContent = text;
+  const btn = $('#toastAction');
+  btn.hidden = !action;
+  btn.textContent = action || '';
+  btn.onclick = () => { $('#toast').hidden = true; onAction?.(); };
+  $('#toast').hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { $('#toast').hidden = true; }, action ? 7000 : 3500);
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch { /* http or old browser: fall back */ }
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch { ok = false; }
+  ta.remove();
+  return ok;
+}
+
+/* ---------------- navigation (hash routes: back button and links work) ---------------- */
+const VIEWS = ['tracker', 'live', 'generate', 'alerts'];
+const ALIASES = { livejobs: 'live' };
+function route() {
+  let v = location.hash.slice(1);
+  v = ALIASES[v] || v;
+  if (!VIEWS.includes(v)) v = 'tracker';
+  for (const name of VIEWS) $('#view-' + name).hidden = name !== v;
+  document.querySelectorAll('.nav a').forEach((a) => { if (a.dataset.view === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  $('#main').scrollTop = 0;
+  if (v === 'live') { markLiveSeen(); if (!live.loaded && !live.loading) loadLive(); }
+  document.title = (v === 'live' && live.unread ? `(${live.unread}) ` : '') + 'Job Center — Sajid Manzoor';
+}
+window.addEventListener('hashchange', () => { route(); $(`#view-${currentView()} h1`)?.focus({ preventScroll: true }); });
+const currentView = () => VIEWS.find((v) => !$('#view-' + v).hidden) || 'tracker';
+function go(view) { if (location.hash === '#' + view) route(); else location.hash = view; }
 
 /* ---------------- tracker ---------------- */
+const APPS_KEY = 'jobcenter_applications';
+const STATUSES = ['saved', 'applied', 'interview', 'offer', 'rejected'];
+const LABEL = { saved: 'Saved', applied: 'Applied', interview: 'Interview', offer: 'Offer', rejected: 'Rejected' };
+const FOLLOW_DAYS = 7;
 let applications = [];
+const openNotes = new Set();
 
-function loadApplications(){
-  try{
-    const raw = localStorage.getItem('jobcenter_applications');
-    applications = raw ? JSON.parse(raw) : [];
-  }catch(e){
-    applications = [];
-  }
-  renderTracker();
+function loadApplications() {
+  const raw = store.get(APPS_KEY, []);
+  applications = (Array.isArray(raw) ? raw : []).filter((a) => a && a.company && a.role).map((a) => ({
+    id: String(a.id || uid()), company: String(a.company), role: String(a.role),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : today(),
+    status: STATUSES.includes(a.status) ? a.status : 'applied',
+    link: safeUrl(a.link), notes: String(a.notes || ''), updated: a.updated || a.date || today(),
+  }));
 }
+const saveApplications = () => store.set(APPS_KEY, applications);
+// Applied a week or more ago with no change since: time to follow up.
+const needsFollow = (a) => a.status === 'applied' && daysSince(a.updated || a.date) >= FOLLOW_DAYS;
+const sameJob = (a, b) => (a.link && b.link && a.link === b.link) ||
+  (a.company.trim().toLowerCase() === b.company.trim().toLowerCase() && a.role.trim().toLowerCase() === b.role.trim().toLowerCase());
 
-function saveApplications(){
-  try{
-    localStorage.setItem('jobcenter_applications', JSON.stringify(applications));
-  }catch(e){
-    console.error('Storage error', e);
-  }
-}
-
-function renderTracker(){
-  const wrap = document.getElementById('tableWrap');
-  const statsRow = document.getElementById('statsRow');
-  const sidebarStats = document.getElementById('sidebarStats');
-
-  const counts = { saved:0, applied:0, interview:0, offer:0, rejected:0 };
-  applications.forEach(a => { counts[a.status] = (counts[a.status]||0) + 1; });
-
-  statsRow.innerHTML = `
-    <div class="stat-pill"><b>${applications.length}</b> total</div>
-    <div class="stat-pill"><b>${counts.applied||0}</b> applied</div>
-    <div class="stat-pill"><b>${counts.interview||0}</b> interviewing</div>
-    <div class="stat-pill"><b>${counts.offer||0}</b> offers</div>
-  `;
-  sidebarStats.innerHTML = `<span class="n">${applications.length}</span> tracked`;
-
-  if (applications.length === 0){
-    wrap.innerHTML = `<div class="empty">No applications yet — add your first one above.</div>`;
-    return;
-  }
-
-  const sorted = [...applications].sort((a,b) => (b.date||'').localeCompare(a.date||''));
-  const rows = sorted.map(app => `
-    <div class="trow" data-id="${app.id}">
-      <div class="company">${escapeHtml(app.company)}</div>
-      <div class="role">${escapeHtml(app.role)}</div>
-      <div class="date">${app.date || '—'}</div>
-      <div>
-        <select class="status-select ${app.status}" data-id="${app.id}">
-          <option value="saved" ${app.status==='saved'?'selected':''}>Saved</option>
-          <option value="applied" ${app.status==='applied'?'selected':''}>Applied</option>
-          <option value="interview" ${app.status==='interview'?'selected':''}>Interview</option>
-          <option value="offer" ${app.status==='offer'?'selected':''}>Offer</option>
-          <option value="rejected" ${app.status==='rejected'?'selected':''}>Rejected</option>
-        </select>
-      </div>
-      <div class="row-actions">
-        <button class="icon-btn" data-del="${app.id}" title="Delete">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-        </button>
-      </div>
-    </div>
-  `).join('');
-
-  wrap.innerHTML = `
-    <div class="trow head"><div>Company</div><div>Role</div><div>Date</div><div>Status</div><div></div></div>
-    ${rows}
-  `;
-
-  wrap.querySelectorAll('.status-select').forEach(sel => {
-    sel.addEventListener('change', () => {
-      const app = applications.find(a => a.id === sel.dataset.id);
-      if (app){ app.status = sel.value; saveApplications(); renderTracker(); }
-    });
-  });
-  wrap.querySelectorAll('[data-del]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      applications = applications.filter(a => a.id !== btn.dataset.del);
-      saveApplications();
-      renderTracker();
-    });
-  });
-}
-
-function escapeHtml(s){
-  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-document.getElementById('addBtn').addEventListener('click', () => {
-  const company = document.getElementById('f-company').value.trim();
-  const role = document.getElementById('f-role').value.trim();
-  const date = document.getElementById('f-date').value;
-  const status = document.getElementById('f-status').value;
-  const link = document.getElementById('f-link').value.trim();
-  const notes = document.getElementById('f-notes').value.trim();
-  if (!company || !role) return;
-
-  applications.push({
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-    company, role, date: date || new Date().toISOString().slice(0,10), status, link, notes
-  });
+function addApplication(app) {
+  const dup = applications.find((a) => sameJob(a, app));
+  if (dup) return { dup };
+  const full = { id: uid(), date: today(), status: 'applied', link: '', notes: '', ...app };
+  full.updated = full.date;
+  applications.push(full);
   saveApplications();
   renderTracker();
+  return { app: full };
+}
 
-  ['f-company','f-role','f-date','f-link','f-notes'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-status').value = 'applied';
+function renderTracker() {
+  const counts = Object.fromEntries(STATUSES.map((s) => [s, 0]));
+  applications.forEach((a) => { counts[a.status]++; });
+  const sent = applications.length - counts.saved;
+  const responses = counts.interview + counts.offer;
+  const follow = applications.filter(needsFollow);
+  $('#statsRow').innerHTML = `
+    <div class="stat-pill"><b>${applications.length}</b> total</div>
+    <div class="stat-pill"><b>${counts.applied}</b> applied</div>
+    <div class="stat-pill"><b>${counts.interview}</b> interviewing</div>
+    <div class="stat-pill"><b>${counts.offer}</b> offers</div>
+    <div class="stat-pill" title="Interviews and offers out of applications sent"><b>${sent ? Math.round((responses / sent) * 100) : 0}%</b> response rate</div>`;
+  $('#sidebarStats').innerHTML = `<span class="n">${applications.length}</span> tracked<br><span class="n">${counts.interview}</span> interviewing`;
+  $('#navFollow').hidden = !follow.length;
+  $('#navFollow').textContent = follow.length;
+  const nudge = $('#followNudge');
+  nudge.hidden = !follow.length;
+  nudge.innerHTML = follow.length ? `<span>${follow.length} application${follow.length > 1 ? 's have' : ' has'} had no reply for ${FOLLOW_DAYS}+ days — a short follow-up often gets one.</span><button class="btn small" type="button" id="showFollow">Show them</button>` : '';
+  $('#showFollow')?.addEventListener('click', () => { $('#tFilter').value = 'follow'; renderTracker(); });
+
+  const q = $('#tSearch').value.trim().toLowerCase();
+  const f = $('#tFilter').value;
+  const list = applications
+    .filter((a) => (f === 'all' ? true : f === 'follow' ? needsFollow(a) : a.status === f))
+    .filter((a) => !q || `${a.company} ${a.role} ${a.notes}`.toLowerCase().includes(q))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+
+  const wrap = $('#tableWrap');
+  if (!applications.length) { wrap.innerHTML = '<div class="empty">No applications yet — add one above, or save jobs from Live Jobs.</div>'; return; }
+  if (!list.length) { wrap.innerHTML = '<div class="empty">Nothing matches this search or filter.</div>'; return; }
+  wrap.innerHTML = `<div class="trow head"><div>Company</div><div>Role</div><div>Date</div><div>Status</div><div></div></div>` + list.map((a) => {
+    const d = daysSince(a.date);
+    return `<div class="trow" data-id="${esc(a.id)}">
+      <div class="company">${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.company)}</a>` : esc(a.company)}</div>
+      <div class="role">${esc(a.role)}${needsFollow(a) ? ' <span class="badge follow">follow up</span>' : ''}</div>
+      <div class="date" title="${esc(a.date)}">${esc(a.date)}${d > 0 ? ` · ${d}d` : ''}</div>
+      <div class="status-cell"><select class="status-select ${a.status}" data-act="status" aria-label="Status for ${esc(a.company)}">${STATUSES.map((s) => `<option value="${s}"${s === a.status ? ' selected' : ''}>${LABEL[s]}</option>`).join('')}</select></div>
+      <div class="row-actions">
+        <button class="icon-btn" type="button" data-act="notes" aria-label="Notes for ${esc(a.company)}" title="Notes" aria-expanded="${openNotes.has(a.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg></button>
+        <button class="icon-btn" type="button" data-act="message" aria-label="Write a message for ${esc(a.company)}" title="Write message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 00-3-3L5 17v3z"/></svg></button>
+        <button class="icon-btn danger" type="button" data-act="delete" aria-label="Delete ${esc(a.company)}" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+      </div>
+      ${openNotes.has(a.id) ? `<div class="notes-row"><textarea data-act="note-text" aria-label="Notes for ${esc(a.company)}" placeholder="Contact name, salary range, interview dates…">${esc(a.notes)}</textarea></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+$('#tableWrap').addEventListener('change', (e) => {
+  const row = e.target.closest('.trow[data-id]');
+  const app = row && applications.find((a) => a.id === row.dataset.id);
+  if (!app || e.target.dataset.act !== 'status') return;
+  app.status = e.target.value;
+  app.updated = today();
+  saveApplications();
+  renderTracker();
 });
-
-loadApplications();
-
-/* ---------------- generator ---------------- */
-let selectedType = 'Recruiter email';
-document.querySelectorAll('.type-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    selectedType = chip.dataset.type;
-  });
+$('#tableWrap').addEventListener('input', (e) => {
+  const row = e.target.closest('.trow[data-id]');
+  const app = row && applications.find((a) => a.id === row.dataset.id);
+  if (!app || e.target.dataset.act !== 'note-text') return;
+  app.notes = e.target.value;
+  saveApplications();
 });
-
-function buildMessage(type, company, role){
-  const c = company || 'your company';
-  const r = role || 'this role';
-  if (type === 'LinkedIn connection note'){
-    return `Hi, I'm an SQA Engineer (manual testing + Playwright automation) and noticed the ${r} opening at ${c}. Would love to connect and learn more about the team — here's a quick look at my work: sajidthebhatti.vercel.app`;
+$('#tableWrap').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-act]');
+  const row = btn?.closest('.trow[data-id]');
+  const app = row && applications.find((a) => a.id === row.dataset.id);
+  if (!app) return;
+  if (btn.dataset.act === 'notes') {
+    if (openNotes.has(app.id)) openNotes.delete(app.id); else openNotes.add(app.id);
+    renderTracker();
+    if (openNotes.has(app.id)) $(`.trow[data-id="${CSS.escape(app.id)}"] textarea`)?.focus();
   }
-  if (type === 'Cover letter'){
+  if (btn.dataset.act === 'message') openGenerator({ company: app.company, role: app.role, type: needsFollow(app) ? 'followup' : app.status === 'interview' ? 'thanks' : 'email', applied: app.date });
+  if (btn.dataset.act === 'delete') {
+    const i = applications.indexOf(app);
+    applications.splice(i, 1);
+    saveApplications();
+    renderTracker();
+    renderLive();
+    toast(`Deleted ${app.company}.`, 'Undo', () => { applications.splice(Math.min(i, applications.length), 0, app); saveApplications(); renderTracker(); renderLive(); });
+  }
+});
+$('#tSearch').addEventListener('input', renderTracker);
+$('#tFilter').addEventListener('change', renderTracker);
+
+$('#addForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const company = $('#f-company').value.trim(), role = $('#f-role').value.trim();
+  const rawLink = $('#f-link').value.trim();
+  const err = $('#addError');
+  err.textContent = '';
+  if (!company || !role) { err.textContent = 'Company and role are required.'; (company ? $('#f-role') : $('#f-company')).focus(); return; }
+  if (rawLink && !safeUrl(rawLink)) { err.textContent = 'The job link must start with https:// (or leave it empty).'; $('#f-link').focus(); return; }
+  const date = $('#f-date').value || today();
+  const r = addApplication({ company, role, date, status: $('#f-status').value, link: safeUrl(rawLink), notes: $('#f-notes').value.trim() });
+  if (r.dup) { err.textContent = `Already tracked: ${r.dup.company} — ${r.dup.role} (${LABEL[r.dup.status]}).`; return; }
+  ['f-company', 'f-role', 'f-link', 'f-notes'].forEach((id) => { $('#' + id).value = ''; });
+  $('#f-date').value = today();
+  $('#f-status').value = 'applied';
+  $('#f-company').focus();
+  toast(`Added ${company}.`);
+  renderLive();
+});
+
+/* backup */
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('#exportJson').addEventListener('click', () => {
+  if (!applications.length) { $('#backupMsg').textContent = 'Nothing to export yet.'; return; }
+  download(`job-applications-${today()}.json`, JSON.stringify(applications, null, 2), 'application/json');
+});
+$('#exportCsv').addEventListener('click', () => {
+  if (!applications.length) { $('#backupMsg').textContent = 'Nothing to export yet.'; return; }
+  const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['Company', 'Role', 'Date', 'Status', 'Link', 'Notes'], ...applications.map((a) => [a.company, a.role, a.date, LABEL[a.status], a.link, a.notes])];
+  download(`job-applications-${today()}.csv`, '﻿' + rows.map((r) => r.map(cell).join(',')).join('\r\n'), 'text/csv');
+});
+$('#importBtn').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data)) throw new Error('not a list');
+    let added = 0;
+    for (const a of data) {
+      if (!a || !a.company || !a.role) continue;
+      const r = addApplication({ company: String(a.company), role: String(a.role), date: /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : today(), status: STATUSES.includes(a.status) ? a.status : 'applied', link: safeUrl(a.link), notes: String(a.notes || '') });
+      if (r.app) added++;
+    }
+    $('#backupMsg').textContent = `Imported ${added} application${added === 1 ? '' : 's'}${data.length - added ? `, skipped ${data.length - added} already tracked or invalid` : ''}.`;
+    renderLive();
+  } catch { $('#backupMsg').textContent = 'That file is not a Job Center JSON export.'; }
+});
+
+/* ---------------- messages ---------------- */
+// Skills a job description may ask for; "have" = on Sajid's profile.
+const JD_SKILLS = [
+  ['Playwright', /\bplaywright\b/i, true], ['Postman', /\bpostman\b/i, true], ['API testing', /\b(?:api|rest(?:ful)?)\b/i, true],
+  ['Pytest', /\bpytest\b/i, true], ['Python', /\bpython\b/i, true], ['JavaScript', /\b(?:javascript|js)\b/i, true],
+  ['Manual testing', /\bmanual\b/i, true], ['Regression testing', /\bregression\b/i, true], ['Exploratory testing', /\bexploratory\b/i, true],
+  ['Test automation', /\bautomat(?:ion|ed)\b/i, true], ['Performance testing', /\b(?:jmeter|performance|load\s+test)\w*/i, true],
+  ['JIRA', /\bjira\b/i, true], ['TestRail', /\btestrail\b/i, true], ['Agile/Scrum', /\b(?:agile|scrum)\b/i, true],
+  ['Mobile testing', /\b(?:mobile|android|ios)\b/i, true], ['AI/ML', /\b(?:ai|ml|machine\s+learning|llm)\b/i, true],
+  ['Banking/Fintech', /\b(?:bank\w*|fintech|payments?)\b/i, true], ['Blockchain/Web3', /\b(?:blockchain|web3|crypto)\b/i, true],
+  ['IoT', /\biot\b/i, true], ['Azure', /\bazure\b/i, true], ['Git', /\bgit(?:hub|lab)?\b/i, true],
+  ['Selenium', /\bselenium\b/i, false], ['Cypress', /\bcypress\b/i, false], ['Appium', /\bappium\b/i, false],
+  ['TypeScript', /\btypescript\b/i, false], ['Java', /\bjava\b(?!script)/i, false], ['C#', /\bc#|\.net\b/i, false],
+  ['SQL', /\bsql\b/i, false], ['CI/CD', /\b(?:ci\/cd|jenkins|github\s+actions|gitlab\s+ci|pipelines?)\b/i, false],
+  ['Docker', /\bdocker\b/i, false], ['AWS', /\baws\b/i, false], ['Cucumber/BDD', /\b(?:cucumber|bdd|gherkin)\b/i, false],
+  ['Security testing', /\bsecurity\s+test/i, false], ['Accessibility', /\b(?:accessibility|wcag|a11y)\b/i, false], ['ISTQB', /\bistqb\b/i, false],
+];
+const listJoin = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
+function analyseJd(text) {
+  const found = JD_SKILLS.filter(([, re]) => re.test(text));
+  return { have: found.filter((s) => s[2]).map((s) => s[0]), gap: found.filter((s) => !s[2]).map((s) => s[0]) };
+}
+
+const SIGN = 'Best regards,\nSajid Manzoor\nisajidmanzoor@gmail.com | +92 313 6194135\nPortfolio: https://sajidthebhatti.vercel.app';
+function buildMessage(type, company, role, have, applied) {
+  const top = have.slice(0, 3);
+  const skillLine = top.length ? ` Your posting asks for ${listJoin(top)} — that is what I work with every day.` : '';
+  if (type === 'linkedin') {
+    const withSkills = `Hi, I'm an SQA Engineer (manual + Playwright automation) and saw the ${role} opening at ${company}.${top.length ? ` I work daily with ${listJoin(top.slice(0, 2))}.` : ''} Would love to connect — my work: sajidthebhatti.vercel.app`;
+    return withSkills.length <= 300 ? withSkills : `Hi, I'm an SQA Engineer (manual + Playwright automation) and saw the ${role} opening at ${company}. Would love to connect — my work: sajidthebhatti.vercel.app`;
+  }
+  if (type === 'cover') {
     return `Dear Hiring Manager,
 
 I'm Sajid Manzoor, an SQA Engineer based in Lahore with 2 years of experience testing web, SaaS, banking, and AI/ML applications — manual first, automation second.
 
-I'm writing about the ${r} position at ${c}. In my current role, I rebuilt how test cases were prioritized and cut a regression cycle by roughly a third; on another project, I shipped a legal-ops mobile app with zero critical bugs at launch. Alongside client QA work, I also build full-stack products end to end — including an AI health assistant and a multi-tenant SaaS platform — so I bring both a tester's eye and a builder's context to every review.
+I'm writing about the ${role} position at ${company}.${skillLine} In my current role, I rebuilt how test cases were prioritized and cut a regression cycle by roughly a third; on another project, I shipped a legal-ops mobile app with zero critical bugs at launch. Alongside client QA work, I build full-stack products end to end — an AI product-listing pipeline, an AI health assistant and a multi-tenant SaaS platform — so I bring both a tester's eye and a builder's context to every review.
 
-I'd welcome the chance to talk about how I could contribute to ${c}. My portfolio, with detailed case studies, is at sajidthebhatti.vercel.app.
+I'd welcome the chance to talk about how I could contribute to ${company}. My portfolio, with project details, is at sajidthebhatti.vercel.app.
 
-Best regards,
-Sajid Manzoor
-isajidmanzoor@gmail.com | +92 313 6194135`;
+${SIGN}`;
   }
-  return `Subject: Application — ${r} at ${c}
+  if (type === 'followup') {
+    const when = applied ? ` on ${new Date(applied + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}` : ' recently';
+    return `Subject: Following up — ${role} application
 
 Hi,
 
-I'm Sajid Manzoor, an SQA Engineer based in Lahore with 2 years of hands-on experience in manual testing, test automation (Playwright MCP), and API testing across banking, blockchain, and AI/ML products.
+I applied for the ${role} position at ${company}${when} and wanted to follow up. I'm still very interested in the role and would be glad to share anything that helps your review — test cases, automation samples, or a quick call.${skillLine}
 
-I saw the ${r} opening at ${c} and wanted to reach out directly. At my current role, I cut a regression cycle by roughly a third by rethinking how test cases were prioritized, and I've shipped products with zero critical bugs at launch — the kind of ownership I'd bring to this role.
+Thank you for your time.
 
-Portfolio: https://sajidthebhatti.vercel.app
+${SIGN}`;
+  }
+  if (type === 'thanks') {
+    return `Subject: Thank you — ${role} interview
+
+Hi,
+
+Thank you for taking the time to talk with me about the ${role} role at ${company}. I enjoyed learning about the team and how you approach quality, and it made me even more excited about the position.
+
+If there is anything else I can share — test cases, automation samples or references — I'm happy to send it.
+
+${SIGN}`;
+  }
+  return `Subject: Application — ${role} at ${company}
+
+Hi,
+
+I'm Sajid Manzoor, an SQA Engineer based in Lahore with 2 years of hands-on experience in manual testing, test automation (Playwright), and API testing across banking, blockchain, and AI/ML products.
+
+I saw the ${role} opening at ${company} and wanted to reach out directly.${skillLine} In my current role, I cut a regression cycle by roughly a third by rethinking how test cases were prioritized, and I've shipped products with zero critical bugs at launch — the kind of ownership I'd bring to this role.
+
 Happy to share more or jump on a quick call.
 
-Best,
-Sajid Manzoor
-isajidmanzoor@gmail.com | +92 313 6194135`;
+${SIGN}`;
 }
 
-document.getElementById('genBtn').addEventListener('click', () => {
-  const company = document.getElementById('gen-company').value.trim();
-  const role = document.getElementById('gen-role').value.trim();
-  const errorBox = document.getElementById('genError');
-  const placeholder = document.getElementById('resultPlaceholder');
-  const resultText = document.getElementById('resultText');
-  const copyBtn = document.getElementById('copyBtn');
-
-  errorBox.textContent = '';
-  if (!company || !role){ errorBox.textContent = 'Add a company and role first.'; return; }
-
-  const text = buildMessage(selectedType, company, role);
-  placeholder.style.display = 'none';
-  resultText.style.display = 'block';
-  resultText.textContent = text;
-  copyBtn.style.display = 'inline-block';
-});
-
-document.getElementById('copyBtn').addEventListener('click', () => {
-  const text = document.getElementById('resultText').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = orig, 1500);
-  });
-});
-
-/* ---------------- live jobs (public API, QA-filtered) ---------------- */
-const QA_KEYWORDS = ['qa','test','tester','testing','quality','sdet','automation','sqa'];
-
-function matchesQA(job){
-  const hay = (job.title + ' ' + (job.tags||[]).join(' ')).toLowerCase();
-  return QA_KEYWORDS.some(k => hay.includes(k));
+let genType = 'email', genApplied = '';
+document.querySelectorAll('.type-chip').forEach((chip) => chip.addEventListener('click', () => setGenType(chip.dataset.type)));
+function setGenType(t) {
+  genType = t;
+  document.querySelectorAll('.type-chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.type === t)));
 }
+function renderMatch() {
+  const jd = $('#jdInput').value;
+  const box = $('#matchBox');
+  if (jd.trim().length < 40) { box.hidden = true; return; }
+  const { have, gap } = analyseJd(jd);
+  box.hidden = false;
+  box.innerHTML = `<div><b>${have.length}</b> of <b>${have.length + gap.length}</b> skills in this job are on your profile.</div>
+    ${have.length ? `<div class="chips">${have.map((s) => `<span class="chip have">✓ ${esc(s)}</span>`).join('')}</div>` : ''}
+    ${gap.length ? `<div style="margin-top:8px;">Prepare for:</div><div class="chips">${gap.map((s) => `<span class="chip gap">${esc(s)}</span>`).join('')}</div>` : ''}`;
+}
+$('#jdInput').addEventListener('input', renderMatch);
 
-let LIVE_JOBS_CACHE = [];
-
-async function loadLiveJobs(){
-  const statusEl = document.getElementById('liveJobsStatus');
-  const listEl = document.getElementById('liveJobsList');
-  statusEl.textContent = 'Scanning global sources\u2026';
-  listEl.innerHTML = '';
-
-  try{
-    const res = await fetch('/api/jobs');
-    const data = await res.json();
-    LIVE_JOBS_CACHE = data.jobs || [];
-    renderLiveJobs(LIVE_JOBS_CACHE, data.totalScanned || 0);
-  }catch(e){
-    statusEl.textContent = 'Could not reach the live jobs feed right now \u2014 try Refresh in a moment.';
+function updateCounter() {
+  const n = $('#resultText').value.length;
+  const c = $('#charCount');
+  c.textContent = genType === 'linkedin' ? `${n}/300` : n ? `${n} characters` : '';
+  c.classList.toggle('over', genType === 'linkedin' && n > 300);
+  const has = n > 0;
+  $('#copyBtn').disabled = !has;
+  $('#saveGenBtn').disabled = !has || !$('#gen-company').value.trim() || !$('#gen-role').value.trim();
+  const isMail = has && genType !== 'linkedin';
+  $('#mailBtn').hidden = !isMail;
+  if (isMail) {
+    const text = $('#resultText').value;
+    const m = text.match(/^Subject: (.*)\n+/);
+    const subject = m ? m[1] : `${$('#gen-role').value.trim()} — Sajid Manzoor`;
+    const body = m ? text.slice(m[0].length) : text;
+    $('#mailBtn').href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 }
+$('#resultText').addEventListener('input', updateCounter);
+['#gen-company', '#gen-role'].forEach((s) => $(s).addEventListener('input', updateCounter));
 
-function renderLiveJobs(matched, totalScanned){
-  const statusEl = document.getElementById('liveJobsStatus');
-  const listEl = document.getElementById('liveJobsList');
-  const q = (document.getElementById('ljSearch').value || '').toLowerCase();
-  const filtered = q ? matched.filter(j => (j.title+j.company+j.location+(j.tags||[]).join(' ')).toLowerCase().includes(q)) : matched;
+$('#genBtn').addEventListener('click', () => {
+  const company = $('#gen-company').value.trim(), role = $('#gen-role').value.trim();
+  $('#genError').textContent = '';
+  if (!company || !role) { $('#genError').textContent = 'Add the company and the role first.'; (company ? $('#gen-role') : $('#gen-company')).focus(); return; }
+  const { have } = analyseJd($('#jdInput').value);
+  $('#resultText').value = buildMessage(genType, company, role, have, genApplied);
+  renderMatch();
+  updateCounter();
+});
+$('#copyBtn').addEventListener('click', async () => {
+  const ok = await copyText($('#resultText').value);
+  toast(ok ? 'Message copied.' : 'Copy was blocked — select the text and copy it manually.');
+});
+$('#saveGenBtn').addEventListener('click', () => {
+  const company = $('#gen-company').value.trim(), role = $('#gen-role').value.trim();
+  const r = addApplication({ company, role, status: genType === 'thanks' ? 'interview' : 'applied', notes: `${genType === 'linkedin' ? 'LinkedIn note' : 'Message'} sent ${today()}` });
+  toast(r.dup ? `Already in the tracker (${LABEL[r.dup.status]}).` : `Saved ${company} to the tracker.`);
+  renderLive();
+});
 
-  if (matched.length === 0){
-    statusEl.textContent = `Scanned ${totalScanned} live listings worldwide \u2014 none matched QA/testing keywords right now. Try Refresh later, or use the Alerts tab as backup.`;
-    listEl.innerHTML = '';
+function openGenerator({ company = '', role = '', jd = '', type = 'email', applied = '' }) {
+  $('#gen-company').value = company;
+  $('#gen-role').value = role;
+  $('#jdInput').value = jd; // never keep another job's description
+  genApplied = applied;
+  setGenType(type);
+  $('#resultText').value = '';
+  $('#genError').textContent = '';
+  renderMatch();
+  updateCounter();
+  go('generate');
+}
+
+/* ---------------- live jobs ---------------- */
+const SEEN_KEY = 'jc_seen_job_urls';
+const HIDDEN_KEY = 'jc_hidden_jobs';
+const PREFS_KEY = 'jc_live_prefs';
+const live = { jobs: [], data: null, loaded: false, loading: false, unread: 0, showHidden: false, newIds: new Set() };
+let hiddenJobs = new Set(store.get(HIDDEN_KEY, []));
+
+const prefs = store.get(PREFS_KEY, {});
+$('#fPk').checked = prefs.pk !== false;
+$('#fRecent').checked = !!prefs.recent;
+$('#fSenior').checked = !!prefs.senior;
+if (prefs.sort === 'new') $('#ljSort').value = 'new';
+function savePrefs() { store.set(PREFS_KEY, { pk: $('#fPk').checked, recent: $('#fRecent').checked, senior: $('#fSenior').checked, sort: $('#ljSort').value }); }
+
+const SENIOR = /\b(?:senior|sr\.?|lead|principal|staff|head|director|manager|architect|vp)\b/i;
+function money(s, text) {
+  if (!s) return text || '';
+  const k = (n) => (n >= 1000 ? `${Math.round(n / 1000)}k` : String(n));
+  const sym = s.currency === 'USD' ? '$' : s.currency === 'EUR' ? '€' : s.currency === 'GBP' ? '£' : `${s.currency} `;
+  const per = /hour/i.test(s.period) ? '/hr' : /month/i.test(s.period) ? '/mo' : '/yr';
+  return s.min === s.max ? `${sym}${k(s.min)}${per}` : `${sym}${k(s.min)}–${k(s.max)}${per}`;
+}
+const tracked = (job) => applications.some((a) => (a.link && a.link === job.url) || sameJob(a, { company: job.company || '', role: job.title || '', link: '' }));
+
+function filteredJobs() {
+  const q = $('#ljSearch').value.trim().toLowerCase();
+  const week = Date.now() - 7 * DAY;
+  let list = live.jobs.filter((j) => (live.showHidden ? hiddenJobs.has(j.id) : !hiddenJobs.has(j.id)));
+  if ($('#fPk').checked) list = list.filter((j) => j.openToPK);
+  if ($('#fRecent').checked) list = list.filter((j) => j.posted >= week);
+  if ($('#fSenior').checked) list = list.filter((j) => !SENIOR.test(j.title));
+  if (q) list = list.filter((j) => `${j.title} ${j.company} ${j.location} ${(j.skills || []).join(' ')} ${(j.tags || []).join(' ')} ${j.summary}`.toLowerCase().includes(q));
+  return $('#ljSort').value === 'new' ? [...list].sort((a, b) => b.posted - a.posted) : list;
+}
+
+function renderLive() {
+  if (!live.loaded) return;
+  const d = live.data;
+  const list = filteredJobs();
+  const ok = d.sources.filter((s) => s.ok);
+  $('#ljStatus').textContent = `${list.length} of ${live.jobs.length} QA jobs shown · ${d.totalScanned} listings scanned from ${ok.length} of ${d.sources.length} sources · updated ${ago(d.updated)}`;
+  $('#ljSources').innerHTML = d.sources.map((s) => `<span class="src ${s.ok ? 'ok' : 'down'}" title="${esc(s.ok ? `${s.count} listings` : `Unavailable: ${s.error}`)}">${s.ok ? '✓' : '✕'} ${esc(s.name)}${s.ok ? ` ${s.count}` : ''}</span>`).join('');
+  const hiddenCount = live.jobs.filter((j) => hiddenJobs.has(j.id)).length;
+  const sh = $('#ljShowHidden');
+  sh.hidden = !hiddenCount && !live.showHidden;
+  sh.textContent = live.showHidden ? '← Back to all jobs' : `Show hidden jobs (${hiddenCount})`;
+
+  if (!list.length) {
+    $('#ljList').innerHTML = `<div class="empty panel">${live.jobs.length ? (live.showHidden ? 'No hidden jobs.' : 'No jobs match these filters — try turning one off.') : 'No QA jobs found right now. Try Refresh later.'}</div>`;
     return;
   }
-  statusEl.textContent = `${totalScanned} live listings scanned worldwide \u00b7 ${matched.length} QA/testing match(es)${q ? ` \u00b7 ${filtered.length} shown after filter` : ''}`;
-
-  listEl.innerHTML = filtered.map((job, i) => `
-    <div class="lj-card">
-      <div class="lj-top">
-        <div>
-          <div class="lj-title">${escapeHtml(job.title)}</div>
-          <div class="lj-company">${escapeHtml(job.company)} \u2014 ${escapeHtml(job.location || '')}</div>
-        </div>
+  $('#ljList').innerHTML = list.map((j) => {
+    const cls = j.score >= 75 ? 'hi' : j.score >= 60 ? 'mid' : 'lo';
+    const inTracker = tracked(j);
+    const pay = money(j.salary, j.salaryText);
+    return `<article class="lj-card${live.newIds.has(j.id) ? ' is-new' : ''}" data-id="${esc(j.id)}">
+      <div class="score ${cls}" title="Match score for your profile">${j.score}</div>
+      <div>
+        <div class="lj-title">${esc(j.title)} ${live.newIds.has(j.id) ? '<span class="badge new">new</span>' : ''}</div>
+        <div class="lj-company">${esc(j.company)} · ${esc(j.location || 'Remote')}</div>
       </div>
       <div class="lj-meta">
-        ${job.remote ? '<span class="lj-tag remote">Remote</span>' : ''}
-        ${(job.tags||[]).slice(0,4).map(t => `<span class="lj-tag">${escapeHtml(String(t))}</span>`).join('')}
+        ${j.openToPK ? '<span class="lj-tag pk">Open to Pakistan</span>' : ''}
+        ${j.remote ? '<span class="lj-tag">Remote</span>' : ''}
+        ${pay ? `<span class="lj-tag money">${esc(pay)}</span>` : ''}
+        ${j.posted ? `<span class="lj-tag" title="${esc(new Date(j.posted).toLocaleString())}">${esc(ago(j.posted))}</span>` : ''}
+        <span class="lj-tag">${esc(j.source)}</span>
       </div>
+      <div class="lj-why">Why: ${esc((j.reasons || []).join(' · '))}</div>
+      ${j.summary ? `<div class="lj-summary">${esc(j.summary)}</div>` : ''}
       <div class="lj-actions">
-        <a class="lj-btn primary" href="${job.url}" target="_blank" rel="noopener">View & Apply</a>
-        <button class="lj-btn" data-add-live="${i}">Add to Tracker</button>
+        <a class="btn primary small" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener">View &amp; apply ↗</a>
+        <button class="btn small" type="button" data-act="save" ${inTracker ? 'disabled' : ''}>${inTracker ? 'In tracker ✓' : 'Save to tracker'}</button>
+        <button class="btn small" type="button" data-act="write">Write message</button>
+        <button class="btn small" type="button" data-act="hide">${hiddenJobs.has(j.id) ? 'Unhide' : 'Hide'}</button>
       </div>
-    </div>
-  `).join('');
-
-  listEl.querySelectorAll('[data-add-live]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const job = filtered[parseInt(btn.dataset.addLive, 10)];
-      applications.push({
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-        company: job.company, role: job.title,
-        date: new Date().toISOString().slice(0,10), status: 'saved',
-        link: job.url, notes: 'Found via Live Jobs'
-      });
-      saveApplications();
-      btn.textContent = 'Added \u2713';
-      btn.disabled = true;
-    });
-  });
+    </article>`;
+  }).join('');
 }
 
-document.getElementById('goLiveJobsBanner').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.querySelector('[data-view="livejobs"]').click();
+$('#ljList').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-act]');
+  const card = btn?.closest('.lj-card');
+  const job = card && live.jobs.find((j) => j.id === card.dataset.id);
+  if (!job) return;
+  if (btn.dataset.act === 'save') {
+    const r = addApplication({ company: job.company || 'Unknown company', role: job.title, status: 'saved', link: safeUrl(job.url), notes: `From Live Jobs (${job.source}) · match ${job.score}` });
+    toast(r.dup ? 'Already in your tracker.' : `Saved to tracker: ${job.company}.`);
+    renderLive();
+  }
+  if (btn.dataset.act === 'write') openGenerator({ company: job.company, role: job.title, jd: `${job.summary || ''}\nSkills: ${(job.skills || []).join(', ')}` });
+  if (btn.dataset.act === 'hide') {
+    const was = hiddenJobs.has(job.id);
+    if (was) hiddenJobs.delete(job.id); else hiddenJobs.add(job.id);
+    store.set(HIDDEN_KEY, [...hiddenJobs].slice(-500));
+    renderLive();
+    if (!was) toast('Job hidden.', 'Undo', () => { hiddenJobs.delete(job.id); store.set(HIDDEN_KEY, [...hiddenJobs]); renderLive(); });
+  }
 });
+$('#ljShowHidden').addEventListener('click', () => { live.showHidden = !live.showHidden; renderLive(); });
+$('#ljSearch').addEventListener('input', renderLive);
+['#fPk', '#fRecent', '#fSenior', '#ljSort'].forEach((s) => $(s).addEventListener('change', () => { savePrefs(); renderLive(); }));
+$('#ljRefresh').addEventListener('click', () => loadLive(true));
 
-document.querySelector('[data-view="livejobs"]').addEventListener('click', () => {
-  if (LIVE_JOBS_CACHE.length === 0) loadLiveJobs();
-});
-document.getElementById('ljRefresh').addEventListener('click', loadLiveJobs);
+async function fetchJobs(fresh) {
+  const res = await fetch('/api/jobs' + (fresh ? `?t=${Math.floor(Date.now() / 6e4)}` : ''), { headers: { Accept: 'application/json' } });
+  const data = await res.json().catch(() => null);
+  if (!data || !Array.isArray(data.jobs)) throw new Error(`HTTP ${res.status}`);
+  return data;
+}
 
-/* ---------------- background job alerts (Notification API) ---------------- */
+async function loadLive(fresh) {
+  if (live.loading) return;
+  live.loading = true;
+  const btn = $('#ljRefresh');
+  btn.disabled = true; btn.textContent = 'Loading…';
+  if (!live.loaded) $('#ljStatus').textContent = 'Scanning job boards…';
+  try {
+    const data = await fetchJobs(fresh);
+    const seen = new Set(store.get(SEEN_KEY, []));
+    // First visit: nothing is "new" yet; afterwards, jobs never seen in this browser are.
+    live.newIds = new Set(seen.size ? data.jobs.filter((j) => !seen.has(j.url)).map((j) => j.id) : []);
+    live.jobs = data.jobs; live.data = data; live.loaded = true;
+    renderLive();
+    if (currentView() === 'live') markLiveSeen(); else setUnread(live.newIds.size);
+  } catch {
+    $('#ljStatus').textContent = 'Could not reach the live jobs feed — check your connection and press Refresh.';
+  } finally {
+    live.loading = false;
+    btn.disabled = false; btn.textContent = '↻ Refresh';
+  }
+}
+function markLiveSeen() {
+  if (!live.loaded) return;
+  const seen = new Set(store.get(SEEN_KEY, []));
+  live.jobs.forEach((j) => seen.add(j.url));
+  store.set(SEEN_KEY, [...seen].slice(-800));
+  setUnread(0);
+}
+function setUnread(n) {
+  live.unread = n;
+  $('#navNew').hidden = !n;
+  $('#navNew').textContent = n;
+  document.title = (n ? `(${n}) ` : '') + 'Job Center — Sajid Manzoor';
+}
+
+/* ---------------- notifications ---------------- */
 const NOTIF_KEY = 'jc_notif_enabled';
-const SEEN_KEY = 'jc_seen_job_urls';
-let notifInterval = null;
-
-function getSeenUrls(){
-  try{ return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); }catch(e){ return new Set(); }
+const canNotify = 'Notification' in window;
+let notifTimer = null, swReg = null;
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register('/job-center/sw.js', { scope: '/job-center/' }).then((r) => { swReg = r; }).catch(() => {});
 }
-function saveSeenUrls(set){
-  localStorage.setItem(SEEN_KEY, JSON.stringify([...set].slice(-500)));
+async function notify(title, body) {
+  try {
+    if (swReg) { await swReg.showNotification(title, { body, tag: 'job-center' }); return; }
+    const n = new Notification(title, { body, tag: 'job-center' });
+    n.onclick = () => { window.focus(); go('live'); n.close(); };
+  } catch { /* some browsers only allow service-worker notifications */ }
 }
+const notifOn = () => canNotify && Notification.permission === 'granted' && store.get(NOTIF_KEY, false) === true;
 
-async function checkForNewJobs(isFirstRun){
-  try{
-    const res = await fetch('/api/jobs');
-    const data = await res.json();
-    const jobs = data.jobs || [];
-    const seen = getSeenUrls();
-    const fresh = jobs.filter(j => !seen.has(j.url));
-
-    jobs.forEach(j => seen.add(j.url));
-    saveSeenUrls(seen);
-
-    if (!isFirstRun && fresh.length > 0 && Notification.permission === 'granted'){
-      const title = fresh.length === 1
-        ? `New QA job: ${fresh[0].title}`
-        : `${fresh.length} new QA/testing jobs found`;
-      const body = fresh.length === 1
-        ? `${fresh[0].company} — ${fresh[0].location || 'Remote'}`
-        : fresh.slice(0,3).map(j => j.title).join(', ');
-      const n = new Notification(title, { body, icon: '', tag: 'job-center-alert' });
-      n.onclick = () => { window.focus(); n.close(); };
+async function checkForNewJobs() {
+  try {
+    const data = await fetchJobs(false);
+    const seen = new Set(store.get(SEEN_KEY, []));
+    const good = data.jobs.filter((j) => !seen.has(j.url) && j.score >= 60 && (!$('#fPk').checked || j.openToPK) && !hiddenJobs.has(j.id));
+    if (live.loaded) { live.jobs = data.jobs; live.data = data; data.jobs.filter((j) => !seen.has(j.url)).forEach((j) => live.newIds.add(j.id)); renderLive(); }
+    if (currentView() === 'live' && !document.hidden) { markLiveSeen(); return; }
+    setUnread(live.loaded ? live.newIds.size : good.length);
+    if (good.length) {
+      good.forEach((j) => seen.add(j.url));
+      store.set(SEEN_KEY, [...seen].slice(-800));
+      await notify(good.length === 1 ? `New QA job: ${good[0].title}` : `${good.length} new QA jobs match you`,
+        good.length === 1 ? `${good[0].company} · ${good[0].location || 'Remote'} · match ${good[0].score}` : good.slice(0, 3).map((j) => `${j.title} (${j.score})`).join(', '));
     }
-  }catch(e){ /* silent fail, retry next interval */ }
+  } catch { /* offline: try again next round */ }
 }
-
-function startNotifPolling(){
-  checkForNewJobs(true); // seed "seen" list without notifying on first run
-  if (notifInterval) clearInterval(notifInterval);
-  notifInterval = setInterval(() => checkForNewJobs(false), 5 * 60 * 1000); // every 5 min
+function startPolling() { stopPolling(); notifTimer = setInterval(checkForNewJobs, 5 * 60 * 1000); }
+function stopPolling() { if (notifTimer) clearInterval(notifTimer); notifTimer = null; }
+function refreshNotifUi() {
+  const btn = $('#notifToggle');
+  if (!canNotify) { btn.disabled = true; btn.textContent = 'Not supported in this browser'; $('#notifMsg').textContent = 'Use the email alerts below instead.'; return; }
+  if (Notification.permission === 'denied') { btn.disabled = true; btn.textContent = 'Blocked in browser settings'; $('#notifMsg').textContent = 'Allow notifications for this site in the browser settings, then reload.'; return; }
+  btn.textContent = notifOn() ? 'Turn off notifications' : 'Turn on notifications';
+  btn.classList.toggle('primary', !notifOn());
+  $('#notifMsg').textContent = notifOn() ? 'On — checking every 5 minutes while this page is open.' : '';
 }
-
-function stopNotifPolling(){
-  if (notifInterval) clearInterval(notifInterval);
-  notifInterval = null;
-}
-
-const notifBtn = document.getElementById('ljNotifToggle');
-const notifStatus = document.getElementById('ljNotifStatus');
-
-function refreshNotifBtn(){
-  const enabled = localStorage.getItem(NOTIF_KEY) === 'true' && Notification.permission === 'granted';
-  notifBtn.textContent = enabled ? '🔔 Alerts On' : '🔔 Enable Alerts';
-  notifStatus.style.display = enabled ? 'block' : 'none';
-  notifStatus.textContent = enabled ? 'Checking for new QA jobs every 5 minutes, even while this tab is in the background.' : '';
-}
-
-notifBtn.addEventListener('click', async () => {
-  const currentlyEnabled = localStorage.getItem(NOTIF_KEY) === 'true';
-  if (currentlyEnabled){
-    localStorage.setItem(NOTIF_KEY, 'false');
-    stopNotifPolling();
-    refreshNotifBtn();
-    return;
-  }
+$('#notifToggle').addEventListener('click', async () => {
+  if (notifOn()) { store.set(NOTIF_KEY, false); stopPolling(); refreshNotifUi(); return; }
   const perm = await Notification.requestPermission();
-  if (perm === 'granted'){
-    localStorage.setItem(NOTIF_KEY, 'true');
-    new Notification('Job alerts enabled ✅', { body: "You'll get a notification here whenever a new QA/testing job shows up." });
-    startNotifPolling();
-  } else {
-    alert('Notifications were blocked. Enable them in your browser\'s site settings to use this feature.');
+  if (perm === 'granted') {
+    store.set(NOTIF_KEY, true);
+    startPolling();
+    await notify('Job alerts are on ✅', 'You will be notified about new QA jobs that match you while this page is open.');
   }
-  refreshNotifBtn();
+  refreshNotifUi();
 });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && currentView() === 'live') markLiveSeen(); });
 
-// resume alerts automatically if previously enabled
-if (localStorage.getItem(NOTIF_KEY) === 'true' && 'Notification' in window && Notification.permission === 'granted'){
-  startNotifPolling();
-}
-refreshNotifBtn();
-document.getElementById('ljSearch').addEventListener('input', () => renderLiveJobs(LIVE_JOBS_CACHE, LIVE_JOBS_CACHE.length));
+/* ---------------- copy buttons (alerts) ---------------- */
+document.querySelectorAll('[data-copy]').forEach((btn) => btn.addEventListener('click', async () => {
+  const ok = await copyText($('#' + btn.dataset.copy).textContent);
+  btn.textContent = ok ? 'Copied' : 'Copy failed';
+  setTimeout(() => { btn.textContent = 'Copy'; }, 1400);
+}));
 
-/* ---------------- alerts copy buttons ---------------- */
-document.querySelectorAll('[data-copy]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const text = document.getElementById(btn.dataset.copy).textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = 'Copied';
-      setTimeout(() => btn.textContent = orig, 1400);
-    });
-  });
-});
+/* ---------------- start ---------------- */
+$('#f-date').value = today();
+loadApplications();
+renderTracker();
+refreshNotifUi();
+if (notifOn()) startPolling();
+route();
+// Fetch in the background so the Live Jobs badge can show new jobs.
+if (!live.loaded && !live.loading) loadLive();
 </script>
 </body>
 </html>
